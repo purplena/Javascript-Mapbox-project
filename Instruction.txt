@@ -1,0 +1,3 @@
+Always change name in the file lado.yml.
+Then run "npm install"
+Then run "npm start" to start your live server
