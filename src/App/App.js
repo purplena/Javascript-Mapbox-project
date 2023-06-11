@@ -10,6 +10,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'mapbox-gl/dist/mapbox-gl.css';
 //css
 import '../assets/style.css';
+import HoverPopUp from './HoverPopup.js';
 
 class App {
   //propriétés
@@ -30,8 +31,13 @@ class App {
   //our array of events
   arrEvents = [];
 
+  newMarkerElement;
   //LocalStorage
   localStorageService;
+
+  isHovered = false;
+
+  hoverPopUp;
 
   start() {
     console.log('App démarrée...');
@@ -161,6 +167,7 @@ class App {
       style: config.apis.mapbox_gl.map_styles.streets,
       center: [2.79, 42.68],
       zoom: 12,
+      clickTolerance: 20,
     });
 
     const nav = new mapboxgl.NavigationControl();
@@ -171,15 +178,23 @@ class App {
   }
 
   handleClickMap(evt) {
+    // do not do that if my mouse is currently over a marker
+    console.log(this.isHovered);
+    if (this.isHovered) {
+      return;
+    }
+
     if (this.marker) {
       this.marker.remove();
     }
-    console.log(evt.lngLat.lng);
-    console.log(evt.lngLat.lat);
+    // console.log(evt.lngLat.lng);
+    // console.log(evt.lngLat.lat);
+
     let coords = {
       lng: evt.lngLat.lng,
       lat: evt.lngLat.lat,
     };
+
     this.marker = new mapboxgl.Marker()
       .setLngLat([coords.lng, coords.lat])
       .addTo(this.map);
@@ -189,6 +204,7 @@ class App {
   }
 
   handleAddNewEvent() {
+    //creation de objet literal
     let newTitle = this.elInputTitle.value.trim();
     let newDescription = this.elInputDesc.value.trim();
     let newDateStart = new Date(this.elInputEventStart.value);
@@ -198,7 +214,6 @@ class App {
     let newMarker = new mapboxgl.Marker()
       .setLngLat([newLng, newLat])
       .addTo(this.map);
-    // this.marker = newMarker;
 
     const newEventLiteral = {
       title: newTitle,
@@ -209,15 +224,65 @@ class App {
       lng: newLng,
       marker: newMarker,
     };
-
+    //log d'objet literal
     console.log(newEventLiteral);
-    const newMarkerElement = newMarker.getElement();
-    newMarkerElement.addEventListener('click', this.handlePopUp.bind(this));
+
+    //Create a DOM element marker
+    this.newMarkerElement = newMarker.getElement();
+    this.newMarkerElement.style.padding = '20px';
+
+    //Add mouseenter
+    this.newMarkerElement.addEventListener('mouseenter', () => {
+      this.isHovered = true;
+      console.log(newEventLiteral.title);
+
+      this.hoverPopUp = new HoverPopUp(
+        newEventLiteral,
+        this.map
+      ).mouseHoverPopupAdd();
+    });
+
+    //Add mouseleave
+    this.newMarkerElement.addEventListener('mouseleave', () => {
+      this.newMarkerElement.style.backgroundColor = 'transparent';
+      this.isHovered = false;
+      //console.log(this.isHovered);
+      new HoverPopUp(newEventLiteral, this.map).mouseHoverPopupRemove(
+        this.hoverPopUp
+      );
+    });
+
+    //Add click to see pop-up
+    this.newMarkerElement.addEventListener(
+      'click',
+      this.handlePopUp.bind(this)
+    );
   }
 
-  handlePopUp() {
-    console.log('click');
+  handlePopUp() {}
+
+  mouseHoverPopup(title, lng, lat, dateStart, dateFinish) {
+    // const popup = new mapboxgl.Popup({
+    //   closeButton: false,
+    //   closeOnClick: false,
+    // });
+    // this.map.getCanvas().style.cursor = 'pointer';
+    // return popup
+    //   .setLngLat([lng, lat])
+    //   .setHTML(
+    //     `
+    //     <h1>${title}</h1>
+    //     <div>${dateStart}</div>
+    //     <div>${dateFinish}</div>
+    //     `
+    //   )
+    //   .addTo(this.map);
   }
+
+  // mouseHoverPopupRemove(popup) {
+  //   this.map.getCanvas().style.cursor = '';
+  //   popup.remove();
+  // }
 }
 
 const app = new App();
