@@ -1,16 +1,16 @@
 //our config
-import config from '../../app.config.js';
+import config from "../../app.config.js";
 //library of mapbox
-import mapboxgl from 'mapbox-gl';
+import mapboxgl from "mapbox-gl";
 //bootstrap
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap-icons/font/bootstrap-icons.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 //style de mapbox
-import 'mapbox-gl/dist/mapbox-gl.css';
+import "mapbox-gl/dist/mapbox-gl.css";
 //css
-import '../assets/style.css';
-import HoverPopUp from './HoverPopup.js';
+import "../assets/style.css";
+import HoverPopUp from "./HoverPopUp.js";
 
 class App {
   //propriétés
@@ -40,7 +40,7 @@ class App {
   hoverPopUp;
 
   start() {
-    console.log('App démarrée...');
+    console.log("App démarrée...");
     // this.localStorageService = new LocalStorageService();
 
     this.loadDom();
@@ -49,89 +49,89 @@ class App {
 
   loadDom() {
     //****************************************************** MAP *************************************//
-    this.elDivMap = document.createElement('div');
-    this.elDivMap.id = 'map';
+    this.elDivMap = document.createElement("div");
+    this.elDivMap.id = "map";
 
     //****************************************************** FORM *************************************//
-    const elDivContainer = document.createElement('div');
-    elDivContainer.id = 'add-event-form-container';
-    const elHeader1 = document.createElement('h1');
-    elHeader1.textContent = 'Ajoutez votre événement';
+    const elDivContainer = document.createElement("div");
+    elDivContainer.id = "add-event-form-container";
+    const elHeader1 = document.createElement("h1");
+    elHeader1.textContent = "Ajoutez votre événement";
 
-    const elFormAddEvent = document.createElement('form');
-    elFormAddEvent.id = 'add-event-form';
+    const elFormAddEvent = document.createElement("form");
+    elFormAddEvent.id = "add-event-form";
     elFormAddEvent.noValidate = true;
 
     //Event Title
-    const elLabelTitle = document.createElement('label');
-    elLabelTitle.className = 'add-event-form-label';
-    elLabelTitle.setAttribute('for', 'input-title');
+    const elLabelTitle = document.createElement("label");
+    elLabelTitle.className = "add-event-form-label";
+    elLabelTitle.setAttribute("for", "input-title");
     elLabelTitle.textContent = "Titre de l'événement:";
 
-    this.elInputTitle = document.createElement('input');
-    this.elInputTitle.className = 'add-event-form-input';
-    this.elInputTitle.type = 'text';
-    this.elInputTitle.id = 'input-title';
+    this.elInputTitle = document.createElement("input");
+    this.elInputTitle.className = "add-event-form-input";
+    this.elInputTitle.type = "text";
+    this.elInputTitle.id = "input-title";
 
     //Event Description
-    const elLabelDesc = document.createElement('label');
-    elLabelDesc.className = 'add-event-form-label';
-    elLabelDesc.setAttribute('for', 'input-description');
+    const elLabelDesc = document.createElement("label");
+    elLabelDesc.className = "add-event-form-label";
+    elLabelDesc.setAttribute("for", "input-description");
     elLabelDesc.textContent = "Description de l'événement:";
 
-    this.elInputDesc = document.createElement('textarea');
-    this.elInputDesc.className = 'add-event-form-input';
+    this.elInputDesc = document.createElement("textarea");
+    this.elInputDesc.className = "add-event-form-input";
     this.elInputDesc.rows = 4;
-    this.elInputDesc.id = 'input-description';
+    this.elInputDesc.id = "input-description";
 
     //Event Start
-    const elLabelEventStart = document.createElement('label');
-    elLabelEventStart.className = 'add-event-form-label';
-    elLabelEventStart.setAttribute('for', 'input-datetime-start');
-    elLabelEventStart.textContent = 'Date de début:';
+    const elLabelEventStart = document.createElement("label");
+    elLabelEventStart.className = "add-event-form-label";
+    elLabelEventStart.setAttribute("for", "input-datetime-start");
+    elLabelEventStart.textContent = "Date de début:";
 
-    this.elInputEventStart = document.createElement('input');
-    this.elInputEventStart.className = 'add-event-form-input';
-    this.elInputEventStart.type = 'datetime-local';
-    this.elInputEventStart.id = 'input-datetime-start';
+    this.elInputEventStart = document.createElement("input");
+    this.elInputEventStart.className = "add-event-form-input";
+    this.elInputEventStart.type = "datetime-local";
+    this.elInputEventStart.id = "input-datetime-start";
 
     //Event Finish
-    const elLabelEventFinish = document.createElement('label');
-    elLabelEventFinish.className = 'add-event-form-label';
-    elLabelEventFinish.setAttribute('for', 'input-datetime-finish');
-    elLabelEventFinish.textContent = 'Date de fin:';
+    const elLabelEventFinish = document.createElement("label");
+    elLabelEventFinish.className = "add-event-form-label";
+    elLabelEventFinish.setAttribute("for", "input-datetime-finish");
+    elLabelEventFinish.textContent = "Date de fin:";
 
-    this.elInputEventFinish = document.createElement('input');
-    this.elInputEventFinish.className = 'add-event-form-input';
-    this.elInputEventFinish.type = 'datetime-local';
-    this.elInputEventFinish.id = 'input-datetime-finish';
-
-    //Latitude
-    const elLabelLat = document.createElement('label');
-    elLabelLat.className = 'add-event-form-label';
-    elLabelLat.setAttribute('for', 'input-latitude');
-    elLabelLat.textContent = 'Latitude:';
-
-    this.elInputLat = document.createElement('input');
-    this.elInputLat.className = 'add-event-form-input';
-    this.elInputLat.type = 'number';
-    this.elInputLat.id = 'input-latitude';
+    this.elInputEventFinish = document.createElement("input");
+    this.elInputEventFinish.className = "add-event-form-input";
+    this.elInputEventFinish.type = "datetime-local";
+    this.elInputEventFinish.id = "input-datetime-finish";
 
     //Latitude
-    const elLabelLon = document.createElement('label');
-    elLabelLon.className = 'add-event-form-label';
-    elLabelLon.setAttribute('for', 'input-longitude');
-    elLabelLon.textContent = 'Longitude:';
+    const elLabelLat = document.createElement("label");
+    elLabelLat.className = "add-event-form-label";
+    elLabelLat.setAttribute("for", "input-latitude");
+    elLabelLat.textContent = "Latitude:";
 
-    this.elInputLng = document.createElement('input');
-    this.elInputLng.className = 'add-event-form-input';
-    this.elInputLng.type = 'number';
-    this.elInputLng.id = 'input-longitude';
+    this.elInputLat = document.createElement("input");
+    this.elInputLat.className = "add-event-form-input";
+    this.elInputLat.type = "number";
+    this.elInputLat.id = "input-latitude";
+
+    //Latitude
+    const elLabelLon = document.createElement("label");
+    elLabelLon.className = "add-event-form-label";
+    elLabelLon.setAttribute("for", "input-longitude");
+    elLabelLon.textContent = "Longitude:";
+
+    this.elInputLng = document.createElement("input");
+    this.elInputLng.className = "add-event-form-input";
+    this.elInputLng.type = "number";
+    this.elInputLng.id = "input-longitude";
 
     //Submit Button
-    const elBtnAddNewEvent = document.createElement('button');
-    elBtnAddNewEvent.type = 'button';
-    elBtnAddNewEvent.textContent = 'Submit';
+    const elBtnAddNewEvent = document.createElement("button");
+    elBtnAddNewEvent.type = "button";
+    elBtnAddNewEvent.textContent = "Submit";
 
     //****************************************************** Append *************************************//
     elFormAddEvent.append(
@@ -153,7 +153,7 @@ class App {
     document.body.append(this.elDivMap, elDivContainer);
 
     elBtnAddNewEvent.addEventListener(
-      'click',
+      "click",
       this.handleAddNewEvent.bind(this)
     );
   }
@@ -171,10 +171,10 @@ class App {
     });
 
     const nav = new mapboxgl.NavigationControl();
-    this.map.addControl(nav, 'top-left');
+    this.map.addControl(nav, "top-left");
 
     //on va ecouter le click sur le map
-    this.map.on('click', this.handleClickMap.bind(this));
+    this.map.on("click", this.handleClickMap.bind(this));
   }
 
   handleClickMap(evt) {
@@ -229,10 +229,10 @@ class App {
 
     //Create a DOM element marker
     this.newMarkerElement = newMarker.getElement();
-    this.newMarkerElement.style.padding = '20px';
+    this.newMarkerElement.style.padding = "20px";
 
     //Add mouseenter
-    this.newMarkerElement.addEventListener('mouseenter', () => {
+    this.newMarkerElement.addEventListener("mouseenter", () => {
       this.isHovered = true;
       console.log(newEventLiteral.title);
 
@@ -243,8 +243,8 @@ class App {
     });
 
     //Add mouseleave
-    this.newMarkerElement.addEventListener('mouseleave', () => {
-      this.newMarkerElement.style.backgroundColor = 'transparent';
+    this.newMarkerElement.addEventListener("mouseleave", () => {
+      this.newMarkerElement.style.backgroundColor = "transparent";
       this.isHovered = false;
       //console.log(this.isHovered);
       new HoverPopUp(newEventLiteral, this.map).mouseHoverPopupRemove(
@@ -254,35 +254,12 @@ class App {
 
     //Add click to see pop-up
     this.newMarkerElement.addEventListener(
-      'click',
+      "click",
       this.handlePopUp.bind(this)
     );
   }
 
   handlePopUp() {}
-
-  mouseHoverPopup(title, lng, lat, dateStart, dateFinish) {
-    // const popup = new mapboxgl.Popup({
-    //   closeButton: false,
-    //   closeOnClick: false,
-    // });
-    // this.map.getCanvas().style.cursor = 'pointer';
-    // return popup
-    //   .setLngLat([lng, lat])
-    //   .setHTML(
-    //     `
-    //     <h1>${title}</h1>
-    //     <div>${dateStart}</div>
-    //     <div>${dateFinish}</div>
-    //     `
-    //   )
-    //   .addTo(this.map);
-  }
-
-  // mouseHoverPopupRemove(popup) {
-  //   this.map.getCanvas().style.cursor = '';
-  //   popup.remove();
-  // }
 }
 
 const app = new App();
