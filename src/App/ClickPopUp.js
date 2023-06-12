@@ -1,22 +1,26 @@
 import mapboxgl from "mapbox-gl";
 import formatdate from "./Services/FormatDate";
 
-class HoverPopUp {
+class ClickPopUp {
   title;
+  description;
   lng;
   lat;
   dateStart;
+  dateFinish;
   map;
 
   constructor(newEventLiteral, map) {
     this.title = newEventLiteral.title;
+    this.description = newEventLiteral.description;
     this.lng = newEventLiteral.lng;
     this.lat = newEventLiteral.lat;
     this.dateStart = formatdate.formatDate(newEventLiteral.dateStart);
+    this.dateFinish = formatdate.formatDate(newEventLiteral.dateFinish);
     this.map = map;
   }
 
-  mouseHoverPopupAdd() {
+  mouseClickPopupAdd() {
     const markerHeight = 50;
     const markerRadius = 10;
     const linearOffset = 25;
@@ -38,8 +42,8 @@ class HoverPopUp {
     };
 
     const popup = new mapboxgl.Popup({
-      closeButton: false,
-      closeOnClick: false,
+      closeButton: true,
+      closeOnClick: true,
       offset: popupOffsets,
     });
 
@@ -52,6 +56,9 @@ class HoverPopUp {
         <h1>${this.title}</h1>
         <div>Début: ${this.dateStart}</div>
         <div>Fin: ${this.dateFinish}</div>
+        <div>Description: ${this.description}</div>
+        <div>Lat: ${this.lat}</div>
+        <div>Lgn: ${this.lng}</div>
         `
       )
       .addTo(this.map);
@@ -59,10 +66,10 @@ class HoverPopUp {
     return popup;
   }
 
-  mouseHoverPopupRemove(popup) {
-    this.map.getCanvas().style.cursor = "";
-    popup.remove();
-  }
+  // mouseHoverPopupRemove(popup) {
+  //   this.map.getCanvas().style.cursor = "";
+  //   popup.remove();
+  // }
 }
 
-export default HoverPopUp;
+export default ClickPopUp;

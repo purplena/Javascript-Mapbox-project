@@ -11,6 +11,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 //css
 import "../assets/style.css";
 import HoverPopUp from "./HoverPopUp.js";
+import ClickPopUp from "./ClickPopUp.js";
 
 class App {
   //propriétés
@@ -35,7 +36,10 @@ class App {
   //LocalStorage
   localStorageService;
 
+  // now = new Date();
+
   isHovered = false;
+  isPopupOpened = false;
 
   hoverPopUp;
 
@@ -208,12 +212,36 @@ class App {
     let newTitle = this.elInputTitle.value.trim();
     let newDescription = this.elInputDesc.value.trim();
     let newDateStart = new Date(this.elInputEventStart.value);
+    console.log(newDateStart.getTime());
     let newDateFinish = new Date(this.elInputEventFinish.value);
     let newLat = this.elInputLat.value;
     let newLng = this.elInputLng.value;
-    let newMarker = new mapboxgl.Marker()
+    //change colors
+
+    ///_________________________________________________________________________//
+    let newColor = "";
+    if (
+      newDateStart.getTime() - new Date().getTime() >
+      3 * 24 * 60 * 60 * 1000
+    ) {
+      newColor = "#197530";
+    } else if (
+      newDateStart.getTime() - new Date().getTime() <=
+        3 * 24 * 60 * 60 * 1000 &&
+      newDateStart.getTime() - new Date().getTime() > 0
+    ) {
+      newColor = "#c94b20";
+    } else {
+      newColor = "#b31810";
+    }
+
+    let newMarker = new mapboxgl.Marker({
+      color: newColor,
+    })
       .setLngLat([newLng, newLat])
       .addTo(this.map);
+
+    ///_________________________________________________________________________//
 
     const newEventLiteral = {
       title: newTitle,
@@ -228,38 +256,33 @@ class App {
     console.log(newEventLiteral);
 
     //Create a DOM element marker
-    this.newMarkerElement = newMarker.getElement();
-    this.newMarkerElement.style.padding = "20px";
+    let newMarkerElement = newMarker.getElement();
+    newMarkerElement.style.padding = "20px";
 
     //Add mouseenter
-    this.newMarkerElement.addEventListener("mouseenter", () => {
-      this.isHovered = true;
-      console.log(newEventLiteral.title);
+    // this.newMarkerElement.addEventListener("mouseenter", () => {
+    //   this.isHovered = true;
 
-      this.hoverPopUp = new HoverPopUp(
-        newEventLiteral,
-        this.map
-      ).mouseHoverPopupAdd();
-    });
+    //   this.hoverPopUp = new HoverPopUp(
+    //     newEventLiteral,
+    //     this.map
+    //   ).mouseHoverPopupAdd();
+    // });
 
     //Add mouseleave
-    this.newMarkerElement.addEventListener("mouseleave", () => {
-      this.newMarkerElement.style.backgroundColor = "transparent";
-      this.isHovered = false;
-      //console.log(this.isHovered);
-      new HoverPopUp(newEventLiteral, this.map).mouseHoverPopupRemove(
-        this.hoverPopUp
-      );
-    });
+    // this.newMarkerElement.addEventListener("mouseleave", () => {
+    //   this.isHovered = false;
+    //   new HoverPopUp(newEventLiteral, this.map).mouseHoverPopupRemove(
+    //     this.hoverPopUp
+    //   );
+    // });
 
     //Add click to see pop-up
-    this.newMarkerElement.addEventListener(
+    newMarkerElement.addEventListener(
       "click",
-      this.handlePopUp.bind(this)
+      new ClickPopUp(newEventLiteral, this.map).mouseClickPopupAdd()
     );
   }
-
-  handlePopUp() {}
 }
 
 const app = new App();
