@@ -12,6 +12,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import '../assets/style.css';
 import HoverPopUp from './HoverPopUp.js';
 import ClickPopUp from './ClickPopUp.js';
+import LocalStorageService from './Services/LocalStorageService.js';
 
 class App {
   //propriétés
@@ -32,7 +33,7 @@ class App {
   //our array of events
   arrEvents = [];
 
-  //LocalStorage
+  //LocalStorage = NoteService
   localStorageService;
 
   newEventLiteral;
@@ -43,15 +44,22 @@ class App {
   isPopupOpened = false;
 
   hoverPopUp;
-
+  newMarkerElement;
   popup;
 
   start() {
     console.log('App démarrée...');
-    // this.localStorageService = new LocalStorageService();
-
+    this.localStorageService = new LocalStorageService();
     this.loadDom();
     this.initMap();
+
+    const arrLocalEventsLiteral = this.localStorageService.readStorage();
+    if (arrLocalEventsLiteral.length <= 0) return;
+    for (let localEventLiteral of arrLocalEventsLiteral) {
+      this.arrEvents.push(localEventLiteral);
+    }
+
+    this.renderContent();
   }
 
   loadDom() {
@@ -220,12 +228,6 @@ class App {
     let newLat = this.elInputLat.value;
     let newLng = this.elInputLng.value;
 
-    //Popup
-    //PopUp Classic on Click
-    this.popup = new mapboxgl.Popup({ offset: 25 }).setText(
-      'Construction on the Washington Monument began in 1848.'
-    );
-
     //change colors
 
     ///_________________________________________________________________________//
@@ -252,129 +254,73 @@ class App {
       .addTo(this.map);
     //.setPopup(this.popUpOnClick(newLng, newLat, this.map));
 
+    //Easy form validation
+    // if (
+    //   newTitle == '' ||
+    //   newDescription == '' ||
+    //   newDateStart == '' ||
+    //   newDateFinish == '' ||
+    //   newLat == '' ||
+    //   newLng == ''
+    // ) {
+    //   alert('Veuillez remplir tous les champ');
+    // } else {
     ///_________________________________________________________________________//
 
-    this.newEventLiteral = {
+    const newEventLiteral = {
       title: newTitle,
       description: newDescription,
       dateStart: newDateStart,
       dateFinish: newDateFinish,
       lat: newLat,
       lng: newLng,
-      marker: newMarker,
+      // marker: newMarker,
     };
-    //log d'objet literal
-    console.log(this.newEventLiteral);
+
+    this.arrEvents.push(newEventLiteral);
+    this.localStorageService.saveStorage(this.arrEvents);
+    this.renderContent();
 
     //Create a DOM element marker
-    let newMarkerElement = newMarker.getElement();
-    newMarkerElement.style.padding = '20px';
+    this.newMarkerElement = newMarker.getElement();
+    this.newMarkerElement.style.padding = '20px';
 
-    newMarkerElement.addEventListener('mouseenter', () => {
+    this.newMarkerElement.addEventListener('mouseenter', () => {
       this.isHovered = true;
       this.hoverPopUp = new HoverPopUp(
-        this.newEventLiteral,
+        newEventLiteral,
         this.map
       ).mouseHoverPopupAdd();
     });
 
-    // Add mouseenter
-    newMarkerElement.addEventListener('click', () => {
-      console.log('click');
-      // const markerHeight = 50;
-      // const markerRadius = 10;
-      // const linearOffset = 25;
-      // const popupOffsets = {
-      //   top: [0, 0],
-      //   'top-left': [0, 0],
-      //   'top-right': [0, 0],
-      //   bottom: [0, -markerHeight],
-      //   'bottom-left': [
-      //     linearOffset,
-      //     (markerHeight - markerRadius + linearOffset) * -1,
-      //   ],
-      //   'bottom-right': [
-      //     -linearOffset,
-      //     (markerHeight - markerRadius + linearOffset) * -1,
-      //   ],
-      //   left: [markerRadius, (markerHeight - markerRadius) * -1],
-      //   right: [-markerRadius, (markerHeight - markerRadius) * -1],
-      // };
-
-      const popup = new mapboxgl.Popup({
-        closeButton: false,
-        closeOnClick: false,
-      });
-
-      this.map.getCanvas().style.cursor = 'pointer';
-
-      // console.log(this.lng, this.lat);
-      popup
-        .setLngLat([this.newEventLiteral.lng, this.newEventLiteral.lat])
-        .setHTML(
-          `
-        <h1>Hi bob</h1>
-        `
-        )
-        .addTo(this.map);
+    //Add mouseleave
+    this.newMarkerElement.addEventListener('mouseleave', () => {
+      this.isHovered = false;
+      new HoverPopUp(newEventLiteral, this.map).mouseHoverPopupRemove(
+        this.hoverPopUp
+      );
     });
 
-    //Add mouseleave
-    // newMarkerElement.addEventListener('mouseleave', () => {
-    //   this.isHovered = false;
-    //   new HoverPopUp(this.newEventLiteral, this.map).mouseHoverPopupRemove(
-    //     this.hoverPopUp
-    //   );
-    // });
+    // Add click
+    this.newMarkerElement.addEventListener('click', () => {
+      new ClickPopUp(newEventLiteral, this.map).mouseClickPopupAdd();
+    });
 
-    //Add click to see pop-up
-    // newMarkerElement.addEventListener('click', this.popUpOnClick.bind(this));
+    //On vide les champs du formulaire
+    this.elInputTitle.value =
+      this.elInputDesc.value =
+      this.elInputEventStart.value =
+      this.elInputEventFinish.value =
+        '';
   }
+  // }
 
-  popUpOnClick() {
-    // const anotherContainer = document.createElement('div');
-    // anotherContainer.className = 'anotherContainer';
-    // const divPopuUp = document.createElement('div');
-    // divPopuUp.textContent = this.newEventLiteral.title;
-    // divPopuUp.className = 'popup-div';
-    // anotherContainer.append(divPopuUp);
-    // document.body.append(anotherContainer);
-
-    // const markerHeight = 50;
-    // const markerRadius = 10;
-    // const linearOffset = 25;
-    // const popupOffsets = {
-    //   top: [0, 0],
-    //   'top-left': [0, 0],
-    //   'top-right': [0, 0],
-    //   bottom: [0, -markerHeight],
-    //   'bottom-left': [
-    //     linearOffset,
-    //     (markerHeight - markerRadius + linearOffset) * -1,
-    //   ],
-    //   'bottom-right': [
-    //     -linearOffset,
-    //     (markerHeight - markerRadius + linearOffset) * -1,
-    //   ],
-    //   left: [markerRadius, (markerHeight - markerRadius) * -1],
-    //   right: [-markerRadius, (markerHeight - markerRadius) * -1],
-    // };
-
-    console.log('click');
-    console.log(this.newEventLiteral);
-    console.log(this.map);
-
-    new mapboxgl.Popup({
-      closeButton: true,
-      closeOnClick: true,
-      // offset: popupOffsets,
-    })
-      .setLngLat([this.newEventLiteral.lng, this.newEventLiteral.lat])
-      .setText('Hi Bob')
-      .addTo(this.map);
-    // console.log(popup);
-    // return popup;
-    console.log(this.newEventLiteral.title);
+  renderContent() {
+    for (let localEvent of this.arrEvents) {
+      new mapboxgl.Marker({})
+        .setLngLat([localEvent.lng, localEvent.lat])
+        .addTo(this.map);
+    }
   }
 }
 

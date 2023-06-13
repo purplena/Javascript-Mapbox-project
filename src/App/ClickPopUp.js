@@ -1,5 +1,5 @@
-import mapboxgl from "mapbox-gl";
-import formatdate from "./Services/FormatDate";
+import mapboxgl from 'mapbox-gl';
+import formatdate from './Services/FormatDate';
 
 class ClickPopUp {
   title;
@@ -9,6 +9,7 @@ class ClickPopUp {
   dateStart;
   dateFinish;
   map;
+  popUpElement;
 
   constructor(newEventLiteral, map) {
     this.title = newEventLiteral.title;
@@ -26,14 +27,14 @@ class ClickPopUp {
     const linearOffset = 25;
     const popupOffsets = {
       top: [0, 0],
-      "top-left": [0, 0],
-      "top-right": [0, 0],
+      'top-left': [0, 0],
+      'top-right': [0, 0],
       bottom: [0, -markerHeight],
-      "bottom-left": [
+      'bottom-left': [
         linearOffset,
         (markerHeight - markerRadius + linearOffset) * -1,
       ],
-      "bottom-right": [
+      'bottom-right': [
         -linearOffset,
         (markerHeight - markerRadius + linearOffset) * -1,
       ],
@@ -43,33 +44,42 @@ class ClickPopUp {
 
     const popup = new mapboxgl.Popup({
       closeButton: true,
-      closeOnClick: true,
+      closeOnClick: false,
       offset: popupOffsets,
     });
 
-    this.map.getCanvas().style.cursor = "pointer";
+    this.map.getCanvas().style.cursor = 'pointer';
 
     popup
       .setLngLat([this.lng, this.lat])
       .setHTML(
-        `
-        <h1>${this.title}</h1>
-        <div>Début: ${this.dateStart}</div>
-        <div>Fin: ${this.dateFinish}</div>
-        <div>Description: ${this.description}</div>
-        <div>Lat: ${this.lat}</div>
-        <div>Lgn: ${this.lng}</div>
-        `
+        `<div id="pop-up-container">
+          <h1><strong>Title</strong>: ${this.title}</h1>
+          <p><strong>Début</strong>: ${this.dateStart}</p>
+          <p><strong>Fin</strong>: ${this.dateFinish}</p>
+          <p><strong>Description</strong>: ${this.description}</p>
+          <p><strong>Latitude</strong>: ${this.lat}</p>
+          <p><strong>Longitude</strong>: ${this.lng}</p>
+          <button type=button id="modify-button" data-role="edit">Modify</button>
+          <button type=button id="delete-button" data-role="delete">Delete</button>
+          </div>
+          `
       )
       .addTo(this.map);
 
-    return popup;
+    this.popUpElement = popup.getElement();
+    console.log(popUpElement);
+
+    const deleteBtn = document.getElementById('delete-button').parentElement;
+    deleteBtn.addEventListener('click', this.removeElementClick.bind(this));
+
+    // const divPopup = document.getElementById('pop-up-container').parentElement;
+    // divPopup.addEventListener('click', this.handleClick.bind(this));
   }
 
-  // mouseHoverPopupRemove(popup) {
-  //   this.map.getCanvas().style.cursor = "";
-  //   popup.remove();
-  // }
+  removeElementClick() {
+    this.popUpElement;
+  }
 }
 
 export default ClickPopUp;

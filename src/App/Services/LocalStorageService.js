@@ -1,6 +1,6 @@
 const STORAGE_NAME = 'localEvents';
 
-class NoteService {
+class LocalStorageService {
   //méthode qui récupère les data de localStorage
   readStorage() {
     //declarer une variable qui va contenir les datas
@@ -46,4 +46,4 @@ class NoteService {
   }
 }
 
-export default NoteService;
+export default LocalStorageService;
