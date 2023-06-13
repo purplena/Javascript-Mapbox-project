@@ -23,12 +23,15 @@ class App {
   marker;
 
   //form inputs
+  elHeader1;
+  elHeader2;
   elInputTitle;
   elInputDesc;
   elInputEventStart;
   elInputEventFinish;
   elInputLat;
   elInputLng;
+  elBtnCancelEventModification;
 
   //our array of events
   arrEvents = [];
@@ -36,16 +39,9 @@ class App {
   //LocalStorage = NoteService
   localStorageService;
 
-  newEventLiteral;
-
-  // now = new Date();
-
   isHovered = false;
-  isPopupOpened = false;
-
   hoverPopUp;
-  newMarkerElement;
-  popup;
+  isPopupOpened = false;
 
   start() {
     console.log('App démarrée...');
@@ -55,9 +51,11 @@ class App {
 
     const arrLocalEventsLiteral = this.localStorageService.readStorage();
     if (arrLocalEventsLiteral.length <= 0) return;
-    for (let localEventLiteral of arrLocalEventsLiteral) {
-      this.arrEvents.push(localEventLiteral);
-    }
+    // for (let localEventLiteral of arrLocalEventsLiteral) {
+    //   this.arrEvents.push(localEventLiteral);
+    // }
+
+    this.arrEvents = arrLocalEventsLiteral;
 
     this.renderContent();
   }
@@ -70,8 +68,14 @@ class App {
     //****************************************************** FORM *************************************//
     const elDivContainer = document.createElement('div');
     elDivContainer.id = 'add-event-form-container';
-    const elHeader1 = document.createElement('h1');
-    elHeader1.textContent = 'Ajoutez votre événement';
+
+    this.elHeader1 = document.createElement('h1');
+    this.elHeader1.textContent = 'Ajoutez votre événement';
+    this.elHeader1.className = 'add-new-event-header';
+
+    this.elHeader2 = document.createElement('h1');
+    this.elHeader2.textContent = 'Modifiez votre événement';
+    this.elHeader2.className = 'modify-event-header hidden';
 
     const elFormAddEvent = document.createElement('form');
     elFormAddEvent.id = 'add-event-form';
@@ -148,6 +152,12 @@ class App {
     elBtnAddNewEvent.type = 'button';
     elBtnAddNewEvent.textContent = 'Submit';
 
+    //Cancel Button
+    this.elBtnCancelEventModification = document.createElement('button');
+    this.elBtnCancelEventModification.type = 'button';
+    this.elBtnCancelEventModification.textContent = 'Cancel';
+    this.elBtnCancelEventModification.className = 'hidden';
+
     //****************************************************** Append *************************************//
     elFormAddEvent.append(
       elLabelTitle,
@@ -162,9 +172,10 @@ class App {
       this.elInputLat,
       elLabelLon,
       this.elInputLng,
-      elBtnAddNewEvent
+      elBtnAddNewEvent,
+      this.elBtnCancelEventModification
     );
-    elDivContainer.append(elHeader1, elFormAddEvent);
+    elDivContainer.append(this.elHeader1, this.elHeader2, elFormAddEvent);
     document.body.append(this.elDivMap, elDivContainer);
 
     elBtnAddNewEvent.addEventListener(
@@ -194,7 +205,6 @@ class App {
 
   handleClickMap(evt) {
     // do not do that if my mouse is currently over a marker
-    console.log(this.isHovered);
     if (this.isHovered) {
       return;
     }
@@ -204,6 +214,12 @@ class App {
     }
     // console.log(evt.lngLat.lng);
     // console.log(evt.lngLat.lat);
+
+    let allPopUps = document.querySelectorAll('.mapboxgl-popup');
+    if (allPopUps.length > 0) {
+      allPopUps[0].remove();
+      this.isPopupOpened = false;
+    }
 
     let coords = {
       lng: evt.lngLat.lng,
@@ -223,49 +239,9 @@ class App {
     let newTitle = this.elInputTitle.value.trim();
     let newDescription = this.elInputDesc.value.trim();
     let newDateStart = new Date(this.elInputEventStart.value);
-    console.log(newDateStart.getTime());
     let newDateFinish = new Date(this.elInputEventFinish.value);
     let newLat = this.elInputLat.value;
     let newLng = this.elInputLng.value;
-
-    //change colors
-
-    ///_________________________________________________________________________//
-    let newColor = '';
-    if (
-      newDateStart.getTime() - new Date().getTime() >
-      3 * 24 * 60 * 60 * 1000
-    ) {
-      newColor = '#197530';
-    } else if (
-      newDateStart.getTime() - new Date().getTime() <=
-        3 * 24 * 60 * 60 * 1000 &&
-      newDateStart.getTime() - new Date().getTime() > 0
-    ) {
-      newColor = '#c94b20';
-    } else {
-      newColor = '#b31810';
-    }
-
-    let newMarker = new mapboxgl.Marker({
-      color: newColor,
-    })
-      .setLngLat([newLng, newLat])
-      .addTo(this.map);
-    //.setPopup(this.popUpOnClick(newLng, newLat, this.map));
-
-    //Easy form validation
-    // if (
-    //   newTitle == '' ||
-    //   newDescription == '' ||
-    //   newDateStart == '' ||
-    //   newDateFinish == '' ||
-    //   newLat == '' ||
-    //   newLng == ''
-    // ) {
-    //   alert('Veuillez remplir tous les champ');
-    // } else {
-    ///_________________________________________________________________________//
 
     const newEventLiteral = {
       title: newTitle,
@@ -274,37 +250,11 @@ class App {
       dateFinish: newDateFinish,
       lat: newLat,
       lng: newLng,
-      // marker: newMarker,
     };
 
     this.arrEvents.push(newEventLiteral);
     this.localStorageService.saveStorage(this.arrEvents);
     this.renderContent();
-
-    //Create a DOM element marker
-    this.newMarkerElement = newMarker.getElement();
-    this.newMarkerElement.style.padding = '20px';
-
-    this.newMarkerElement.addEventListener('mouseenter', () => {
-      this.isHovered = true;
-      this.hoverPopUp = new HoverPopUp(
-        newEventLiteral,
-        this.map
-      ).mouseHoverPopupAdd();
-    });
-
-    //Add mouseleave
-    this.newMarkerElement.addEventListener('mouseleave', () => {
-      this.isHovered = false;
-      new HoverPopUp(newEventLiteral, this.map).mouseHoverPopupRemove(
-        this.hoverPopUp
-      );
-    });
-
-    // Add click
-    this.newMarkerElement.addEventListener('click', () => {
-      new ClickPopUp(newEventLiteral, this.map).mouseClickPopupAdd();
-    });
 
     //On vide les champs du formulaire
     this.elInputTitle.value =
@@ -316,10 +266,66 @@ class App {
   // }
 
   renderContent() {
+    const allMarkers = document.querySelectorAll('.mapboxgl-marker');
+    for (let marker of allMarkers) {
+      marker.remove();
+    }
+
     for (let localEvent of this.arrEvents) {
-      new mapboxgl.Marker({})
+      let newColor = '';
+      if (
+        Date.parse(localEvent.dateStart) - Date.parse(new Date()) >
+        3 * 24 * 60 * 60 * 1000
+      ) {
+        newColor = '#197530';
+      } else if (
+        Date.parse(localEvent.dateStart) - Date.parse(new Date()) <=
+          3 * 24 * 60 * 60 * 1000 &&
+        Date.parse(localEvent.dateStart) - Date.parse(new Date()) > 0
+      ) {
+        newColor = '#c94b20';
+      } else {
+        newColor = '#b31810';
+      }
+
+      let newMarker = new mapboxgl.Marker({
+        color: newColor,
+      })
         .setLngLat([localEvent.lng, localEvent.lat])
         .addTo(this.map);
+
+      //Create a DOM element marker
+      let newMarkerElement = newMarker.getElement();
+      newMarkerElement.style.padding = '20px';
+
+      //Mouseenter
+      newMarkerElement.addEventListener('mouseenter', () => {
+        this.isHovered = true;
+        console.log(this.isPopupOpened);
+        if (this.isPopupOpened) return;
+        console.log('temporaire');
+        this.hoverPopUp = new HoverPopUp(
+          localEvent,
+          this.map
+        ).mouseHoverPopupAdd();
+      });
+
+      //Add mouseleave
+      newMarkerElement.addEventListener('mouseleave', () => {
+        this.isHovered = false;
+        new HoverPopUp(localEvent, this.map).mouseHoverPopupRemove(
+          this.hoverPopUp
+        );
+      });
+
+      // Add click
+      newMarkerElement.addEventListener('click', () => {
+        new ClickPopUp(
+          localEvent,
+          this.map,
+          newMarkerElement
+        ).mouseClickPopupAdd();
+      });
     }
   }
 }

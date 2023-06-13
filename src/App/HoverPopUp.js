@@ -12,7 +12,8 @@ class HoverPopUp {
     this.title = newEventLiteral.title;
     this.lng = newEventLiteral.lng;
     this.lat = newEventLiteral.lat;
-    this.dateStart = formatdate.formatDate(newEventLiteral.dateStart);
+    // this.dateStart = formatdate.formatDate(newEventLiteral.dateStart);
+    this.dateStart = newEventLiteral.dateStart;
     this.map = map;
   }
 
@@ -44,8 +45,6 @@ class HoverPopUp {
     });
 
     this.map.getCanvas().style.cursor = 'pointer';
-
-    console.log(this.lng, this.lat);
     popup
       .setLngLat([this.lng, this.lat])
       .setHTML(

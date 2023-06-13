@@ -1,5 +1,6 @@
 import mapboxgl from 'mapbox-gl';
 import formatdate from './Services/FormatDate';
+import app from './App';
 
 class ClickPopUp {
   title;
@@ -9,19 +10,30 @@ class ClickPopUp {
   dateStart;
   dateFinish;
   map;
+
   popUpElement;
 
-  constructor(newEventLiteral, map) {
-    this.title = newEventLiteral.title;
-    this.description = newEventLiteral.description;
-    this.lng = newEventLiteral.lng;
-    this.lat = newEventLiteral.lat;
-    this.dateStart = formatdate.formatDate(newEventLiteral.dateStart);
-    this.dateFinish = formatdate.formatDate(newEventLiteral.dateFinish);
+  constructor(element, map, marker) {
+    this.title = element.title;
+    this.description = element.description;
+    this.lng = element.lng;
+    this.lat = element.lat;
+    // this.dateStart = formatdate.formatDate(element.dateStart);
+    this.dateStart = element.dateStart;
+    // this.dateFinish = formatdate.formatDate(newEventLiteral.dateFinish);
+    this.dateFinish = element.dateFinish;
     this.map = map;
+    this.marker = marker;
   }
 
   mouseClickPopupAdd() {
+    //Here I prevent the creation of a new popup element on every click
+    let allPopUps = document.querySelectorAll('.mapboxgl-popup');
+    for (let popUp of allPopUps) {
+      popUp.remove();
+    }
+
+    //doc: config of a popup
     const markerHeight = 50;
     const markerRadius = 10;
     const linearOffset = 25;
@@ -53,32 +65,66 @@ class ClickPopUp {
     popup
       .setLngLat([this.lng, this.lat])
       .setHTML(
-        `<div id="pop-up-container">
+        `
           <h1><strong>Title</strong>: ${this.title}</h1>
           <p><strong>Début</strong>: ${this.dateStart}</p>
           <p><strong>Fin</strong>: ${this.dateFinish}</p>
           <p><strong>Description</strong>: ${this.description}</p>
-          <p><strong>Latitude</strong>: ${this.lat}</p>
-          <p><strong>Longitude</strong>: ${this.lng}</p>
-          <button type=button id="modify-button" data-role="edit">Modify</button>
-          <button type=button id="delete-button" data-role="delete">Delete</button>
-          </div>
+          <p><strong>Latitude</strong>:</p>
+          <p id="current-lat">${this.lat}</p>
+          <p><strong>Longitude</strong>:</p>
+          <p id="current-lgn">${this.lng}</p>
+          <button type=button id="modify-button">Modify</button>
+          <button type=button id="delete-button">Delete</button>
           `
       )
       .addTo(this.map);
+    app.isPopupOpened = true;
 
-    this.popUpElement = popup.getElement();
-    console.log(popUpElement);
+    popup.on('close', () => {
+      console.log('close');
+      app.isPopupOpened = false;
+    });
 
-    const deleteBtn = document.getElementById('delete-button').parentElement;
+    const deleteBtn = document.getElementById('delete-button');
     deleteBtn.addEventListener('click', this.removeElementClick.bind(this));
 
-    // const divPopup = document.getElementById('pop-up-container').parentElement;
-    // divPopup.addEventListener('click', this.handleClick.bind(this));
+    const modifyBtn = document.getElementById('modify-button');
+    modifyBtn.addEventListener('click', this.modifyElementClick.bind(this));
   }
 
-  removeElementClick() {
-    this.popUpElement;
+  removeElementClick(evt) {
+    console.log(this.marker);
+    const allMarkers = Array.from(
+      document.querySelectorAll('.mapboxgl-marker')
+    );
+    const idxMarker = allMarkers.indexOf(this.marker);
+    app.arrEvents.splice(idxMarker, 1);
+    const element = evt.target.parentElement.parentElement;
+    element.remove();
+    app.localStorageService.saveStorage(app.arrEvents);
+    app.renderContent();
+  }
+
+  modifyElementClick(evt) {
+    console.log('click');
+    app.elHeader1.classList.add('hidden');
+    app.elHeader2.classList.remove('hidden');
+    app.elBtnCancelEventModification.classList.remove('hidden');
+
+    const element = evt.target.parentElement.parentElement;
+    element.remove();
+
+    app.elInputTitle.value = this.title;
+    app.elInputDesc.value = this.description;
+    app.elInputEventStart.value = new Date(this.dateStart)
+      .toISOString()
+      .substr(0, 16);
+    app.elInputEventFinish.value = new Date(this.dateFinish)
+      .toISOString()
+      .substr(0, 16);
+    app.elInputLat.value = this.lat;
+    app.elInputLng.value = this.lng;
   }
 }
 

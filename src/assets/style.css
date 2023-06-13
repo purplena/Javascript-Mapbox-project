@@ -55,3 +55,7 @@ h1 {
 .anotherContainer {
   position: relative;
 }
+
+.hidden {
+  display: none;
+}
