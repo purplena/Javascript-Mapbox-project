@@ -42,5 +42,16 @@ h1 {
 
 .mapboxgl-popup {
   max-width: 400px;
-  font: 12px/20px "Helvetica Neue", Arial, Helvetica, sans-serif;
+  font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+
+.popup-div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: red;
+}
+
+.anotherContainer {
+  position: relative;
 }

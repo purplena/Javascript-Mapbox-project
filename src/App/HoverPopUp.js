@@ -1,5 +1,5 @@
-import mapboxgl from "mapbox-gl";
-import formatdate from "./Services/FormatDate";
+import mapboxgl from 'mapbox-gl';
+import formatdate from './Services/FormatDate';
 
 class HoverPopUp {
   title;
@@ -22,14 +22,14 @@ class HoverPopUp {
     const linearOffset = 25;
     const popupOffsets = {
       top: [0, 0],
-      "top-left": [0, 0],
-      "top-right": [0, 0],
+      'top-left': [0, 0],
+      'top-right': [0, 0],
       bottom: [0, -markerHeight],
-      "bottom-left": [
+      'bottom-left': [
         linearOffset,
         (markerHeight - markerRadius + linearOffset) * -1,
       ],
-      "bottom-right": [
+      'bottom-right': [
         -linearOffset,
         (markerHeight - markerRadius + linearOffset) * -1,
       ],
@@ -43,8 +43,9 @@ class HoverPopUp {
       offset: popupOffsets,
     });
 
-    this.map.getCanvas().style.cursor = "pointer";
+    this.map.getCanvas().style.cursor = 'pointer';
 
+    console.log(this.lng, this.lat);
     popup
       .setLngLat([this.lng, this.lat])
       .setHTML(
@@ -60,7 +61,7 @@ class HoverPopUp {
   }
 
   mouseHoverPopupRemove(popup) {
-    this.map.getCanvas().style.cursor = "";
+    this.map.getCanvas().style.cursor = '';
     popup.remove();
   }
 }

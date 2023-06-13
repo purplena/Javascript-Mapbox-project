@@ -1,17 +1,17 @@
 //our config
-import config from "../../app.config.js";
+import config from '../../app.config.js';
 //library of mapbox
-import mapboxgl from "mapbox-gl";
+import mapboxgl from 'mapbox-gl';
 //bootstrap
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 //style de mapbox
-import "mapbox-gl/dist/mapbox-gl.css";
+import 'mapbox-gl/dist/mapbox-gl.css';
 //css
-import "../assets/style.css";
-import HoverPopUp from "./HoverPopUp.js";
-import ClickPopUp from "./ClickPopUp.js";
+import '../assets/style.css';
+import HoverPopUp from './HoverPopUp.js';
+import ClickPopUp from './ClickPopUp.js';
 
 class App {
   //propriétés
@@ -32,9 +32,10 @@ class App {
   //our array of events
   arrEvents = [];
 
-  newMarkerElement;
   //LocalStorage
   localStorageService;
+
+  newEventLiteral;
 
   // now = new Date();
 
@@ -43,8 +44,10 @@ class App {
 
   hoverPopUp;
 
+  popup;
+
   start() {
-    console.log("App démarrée...");
+    console.log('App démarrée...');
     // this.localStorageService = new LocalStorageService();
 
     this.loadDom();
@@ -53,89 +56,89 @@ class App {
 
   loadDom() {
     //****************************************************** MAP *************************************//
-    this.elDivMap = document.createElement("div");
-    this.elDivMap.id = "map";
+    this.elDivMap = document.createElement('div');
+    this.elDivMap.id = 'map';
 
     //****************************************************** FORM *************************************//
-    const elDivContainer = document.createElement("div");
-    elDivContainer.id = "add-event-form-container";
-    const elHeader1 = document.createElement("h1");
-    elHeader1.textContent = "Ajoutez votre événement";
+    const elDivContainer = document.createElement('div');
+    elDivContainer.id = 'add-event-form-container';
+    const elHeader1 = document.createElement('h1');
+    elHeader1.textContent = 'Ajoutez votre événement';
 
-    const elFormAddEvent = document.createElement("form");
-    elFormAddEvent.id = "add-event-form";
+    const elFormAddEvent = document.createElement('form');
+    elFormAddEvent.id = 'add-event-form';
     elFormAddEvent.noValidate = true;
 
     //Event Title
-    const elLabelTitle = document.createElement("label");
-    elLabelTitle.className = "add-event-form-label";
-    elLabelTitle.setAttribute("for", "input-title");
+    const elLabelTitle = document.createElement('label');
+    elLabelTitle.className = 'add-event-form-label';
+    elLabelTitle.setAttribute('for', 'input-title');
     elLabelTitle.textContent = "Titre de l'événement:";
 
-    this.elInputTitle = document.createElement("input");
-    this.elInputTitle.className = "add-event-form-input";
-    this.elInputTitle.type = "text";
-    this.elInputTitle.id = "input-title";
+    this.elInputTitle = document.createElement('input');
+    this.elInputTitle.className = 'add-event-form-input';
+    this.elInputTitle.type = 'text';
+    this.elInputTitle.id = 'input-title';
 
     //Event Description
-    const elLabelDesc = document.createElement("label");
-    elLabelDesc.className = "add-event-form-label";
-    elLabelDesc.setAttribute("for", "input-description");
+    const elLabelDesc = document.createElement('label');
+    elLabelDesc.className = 'add-event-form-label';
+    elLabelDesc.setAttribute('for', 'input-description');
     elLabelDesc.textContent = "Description de l'événement:";
 
-    this.elInputDesc = document.createElement("textarea");
-    this.elInputDesc.className = "add-event-form-input";
+    this.elInputDesc = document.createElement('textarea');
+    this.elInputDesc.className = 'add-event-form-input';
     this.elInputDesc.rows = 4;
-    this.elInputDesc.id = "input-description";
+    this.elInputDesc.id = 'input-description';
 
     //Event Start
-    const elLabelEventStart = document.createElement("label");
-    elLabelEventStart.className = "add-event-form-label";
-    elLabelEventStart.setAttribute("for", "input-datetime-start");
-    elLabelEventStart.textContent = "Date de début:";
+    const elLabelEventStart = document.createElement('label');
+    elLabelEventStart.className = 'add-event-form-label';
+    elLabelEventStart.setAttribute('for', 'input-datetime-start');
+    elLabelEventStart.textContent = 'Date de début:';
 
-    this.elInputEventStart = document.createElement("input");
-    this.elInputEventStart.className = "add-event-form-input";
-    this.elInputEventStart.type = "datetime-local";
-    this.elInputEventStart.id = "input-datetime-start";
+    this.elInputEventStart = document.createElement('input');
+    this.elInputEventStart.className = 'add-event-form-input';
+    this.elInputEventStart.type = 'datetime-local';
+    this.elInputEventStart.id = 'input-datetime-start';
 
     //Event Finish
-    const elLabelEventFinish = document.createElement("label");
-    elLabelEventFinish.className = "add-event-form-label";
-    elLabelEventFinish.setAttribute("for", "input-datetime-finish");
-    elLabelEventFinish.textContent = "Date de fin:";
+    const elLabelEventFinish = document.createElement('label');
+    elLabelEventFinish.className = 'add-event-form-label';
+    elLabelEventFinish.setAttribute('for', 'input-datetime-finish');
+    elLabelEventFinish.textContent = 'Date de fin:';
 
-    this.elInputEventFinish = document.createElement("input");
-    this.elInputEventFinish.className = "add-event-form-input";
-    this.elInputEventFinish.type = "datetime-local";
-    this.elInputEventFinish.id = "input-datetime-finish";
-
-    //Latitude
-    const elLabelLat = document.createElement("label");
-    elLabelLat.className = "add-event-form-label";
-    elLabelLat.setAttribute("for", "input-latitude");
-    elLabelLat.textContent = "Latitude:";
-
-    this.elInputLat = document.createElement("input");
-    this.elInputLat.className = "add-event-form-input";
-    this.elInputLat.type = "number";
-    this.elInputLat.id = "input-latitude";
+    this.elInputEventFinish = document.createElement('input');
+    this.elInputEventFinish.className = 'add-event-form-input';
+    this.elInputEventFinish.type = 'datetime-local';
+    this.elInputEventFinish.id = 'input-datetime-finish';
 
     //Latitude
-    const elLabelLon = document.createElement("label");
-    elLabelLon.className = "add-event-form-label";
-    elLabelLon.setAttribute("for", "input-longitude");
-    elLabelLon.textContent = "Longitude:";
+    const elLabelLat = document.createElement('label');
+    elLabelLat.className = 'add-event-form-label';
+    elLabelLat.setAttribute('for', 'input-latitude');
+    elLabelLat.textContent = 'Latitude:';
 
-    this.elInputLng = document.createElement("input");
-    this.elInputLng.className = "add-event-form-input";
-    this.elInputLng.type = "number";
-    this.elInputLng.id = "input-longitude";
+    this.elInputLat = document.createElement('input');
+    this.elInputLat.className = 'add-event-form-input';
+    this.elInputLat.type = 'number';
+    this.elInputLat.id = 'input-latitude';
+
+    //Latitude
+    const elLabelLon = document.createElement('label');
+    elLabelLon.className = 'add-event-form-label';
+    elLabelLon.setAttribute('for', 'input-longitude');
+    elLabelLon.textContent = 'Longitude:';
+
+    this.elInputLng = document.createElement('input');
+    this.elInputLng.className = 'add-event-form-input';
+    this.elInputLng.type = 'number';
+    this.elInputLng.id = 'input-longitude';
 
     //Submit Button
-    const elBtnAddNewEvent = document.createElement("button");
-    elBtnAddNewEvent.type = "button";
-    elBtnAddNewEvent.textContent = "Submit";
+    const elBtnAddNewEvent = document.createElement('button');
+    elBtnAddNewEvent.type = 'button';
+    elBtnAddNewEvent.textContent = 'Submit';
 
     //****************************************************** Append *************************************//
     elFormAddEvent.append(
@@ -157,7 +160,7 @@ class App {
     document.body.append(this.elDivMap, elDivContainer);
 
     elBtnAddNewEvent.addEventListener(
-      "click",
+      'click',
       this.handleAddNewEvent.bind(this)
     );
   }
@@ -175,10 +178,10 @@ class App {
     });
 
     const nav = new mapboxgl.NavigationControl();
-    this.map.addControl(nav, "top-left");
+    this.map.addControl(nav, 'top-left');
 
     //on va ecouter le click sur le map
-    this.map.on("click", this.handleClickMap.bind(this));
+    this.map.on('click', this.handleClickMap.bind(this));
   }
 
   handleClickMap(evt) {
@@ -216,23 +219,30 @@ class App {
     let newDateFinish = new Date(this.elInputEventFinish.value);
     let newLat = this.elInputLat.value;
     let newLng = this.elInputLng.value;
+
+    //Popup
+    //PopUp Classic on Click
+    this.popup = new mapboxgl.Popup({ offset: 25 }).setText(
+      'Construction on the Washington Monument began in 1848.'
+    );
+
     //change colors
 
     ///_________________________________________________________________________//
-    let newColor = "";
+    let newColor = '';
     if (
       newDateStart.getTime() - new Date().getTime() >
       3 * 24 * 60 * 60 * 1000
     ) {
-      newColor = "#197530";
+      newColor = '#197530';
     } else if (
       newDateStart.getTime() - new Date().getTime() <=
         3 * 24 * 60 * 60 * 1000 &&
       newDateStart.getTime() - new Date().getTime() > 0
     ) {
-      newColor = "#c94b20";
+      newColor = '#c94b20';
     } else {
-      newColor = "#b31810";
+      newColor = '#b31810';
     }
 
     let newMarker = new mapboxgl.Marker({
@@ -240,10 +250,11 @@ class App {
     })
       .setLngLat([newLng, newLat])
       .addTo(this.map);
+    //.setPopup(this.popUpOnClick(newLng, newLat, this.map));
 
     ///_________________________________________________________________________//
 
-    const newEventLiteral = {
+    this.newEventLiteral = {
       title: newTitle,
       description: newDescription,
       dateStart: newDateStart,
@@ -253,35 +264,117 @@ class App {
       marker: newMarker,
     };
     //log d'objet literal
-    console.log(newEventLiteral);
+    console.log(this.newEventLiteral);
 
     //Create a DOM element marker
     let newMarkerElement = newMarker.getElement();
-    newMarkerElement.style.padding = "20px";
+    newMarkerElement.style.padding = '20px';
 
-    //Add mouseenter
-    // this.newMarkerElement.addEventListener("mouseenter", () => {
-    //   this.isHovered = true;
+    newMarkerElement.addEventListener('mouseenter', () => {
+      this.isHovered = true;
+      this.hoverPopUp = new HoverPopUp(
+        this.newEventLiteral,
+        this.map
+      ).mouseHoverPopupAdd();
+    });
 
-    //   this.hoverPopUp = new HoverPopUp(
-    //     newEventLiteral,
-    //     this.map
-    //   ).mouseHoverPopupAdd();
-    // });
+    // Add mouseenter
+    newMarkerElement.addEventListener('click', () => {
+      console.log('click');
+      // const markerHeight = 50;
+      // const markerRadius = 10;
+      // const linearOffset = 25;
+      // const popupOffsets = {
+      //   top: [0, 0],
+      //   'top-left': [0, 0],
+      //   'top-right': [0, 0],
+      //   bottom: [0, -markerHeight],
+      //   'bottom-left': [
+      //     linearOffset,
+      //     (markerHeight - markerRadius + linearOffset) * -1,
+      //   ],
+      //   'bottom-right': [
+      //     -linearOffset,
+      //     (markerHeight - markerRadius + linearOffset) * -1,
+      //   ],
+      //   left: [markerRadius, (markerHeight - markerRadius) * -1],
+      //   right: [-markerRadius, (markerHeight - markerRadius) * -1],
+      // };
+
+      const popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false,
+      });
+
+      this.map.getCanvas().style.cursor = 'pointer';
+
+      // console.log(this.lng, this.lat);
+      popup
+        .setLngLat([this.newEventLiteral.lng, this.newEventLiteral.lat])
+        .setHTML(
+          `
+        <h1>Hi bob</h1>
+        `
+        )
+        .addTo(this.map);
+    });
 
     //Add mouseleave
-    // this.newMarkerElement.addEventListener("mouseleave", () => {
+    // newMarkerElement.addEventListener('mouseleave', () => {
     //   this.isHovered = false;
-    //   new HoverPopUp(newEventLiteral, this.map).mouseHoverPopupRemove(
+    //   new HoverPopUp(this.newEventLiteral, this.map).mouseHoverPopupRemove(
     //     this.hoverPopUp
     //   );
     // });
 
     //Add click to see pop-up
-    newMarkerElement.addEventListener(
-      "click",
-      new ClickPopUp(newEventLiteral, this.map).mouseClickPopupAdd()
-    );
+    // newMarkerElement.addEventListener('click', this.popUpOnClick.bind(this));
+  }
+
+  popUpOnClick() {
+    // const anotherContainer = document.createElement('div');
+    // anotherContainer.className = 'anotherContainer';
+    // const divPopuUp = document.createElement('div');
+    // divPopuUp.textContent = this.newEventLiteral.title;
+    // divPopuUp.className = 'popup-div';
+    // anotherContainer.append(divPopuUp);
+    // document.body.append(anotherContainer);
+
+    // const markerHeight = 50;
+    // const markerRadius = 10;
+    // const linearOffset = 25;
+    // const popupOffsets = {
+    //   top: [0, 0],
+    //   'top-left': [0, 0],
+    //   'top-right': [0, 0],
+    //   bottom: [0, -markerHeight],
+    //   'bottom-left': [
+    //     linearOffset,
+    //     (markerHeight - markerRadius + linearOffset) * -1,
+    //   ],
+    //   'bottom-right': [
+    //     -linearOffset,
+    //     (markerHeight - markerRadius + linearOffset) * -1,
+    //   ],
+    //   left: [markerRadius, (markerHeight - markerRadius) * -1],
+    //   right: [-markerRadius, (markerHeight - markerRadius) * -1],
+    // };
+
+    console.log('click');
+    console.log(this.newEventLiteral);
+    console.log(this.map);
+
+    new mapboxgl.Popup({
+      closeButton: true,
+      closeOnClick: true,
+      // offset: popupOffsets,
+    })
+      .setLngLat([this.newEventLiteral.lng, this.newEventLiteral.lat])
+      .setText('Hi Bob')
+      .addTo(this.map);
+    // console.log(popup);
+    // return popup;
+    console.log(this.newEventLiteral.title);
   }
 }
 
