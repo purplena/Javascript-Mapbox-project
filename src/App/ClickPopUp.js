@@ -18,9 +18,7 @@ class ClickPopUp {
     this.description = element.description;
     this.lng = element.lng;
     this.lat = element.lat;
-    // this.dateStart = formatdate.formatDate(element.dateStart);
     this.dateStart = element.dateStart;
-    // this.dateFinish = formatdate.formatDate(newEventLiteral.dateFinish);
     this.dateFinish = element.dateFinish;
     this.map = map;
     this.marker = marker;
@@ -62,6 +60,21 @@ class ClickPopUp {
 
     this.map.getCanvas().style.cursor = 'pointer';
 
+    let htmlInjection = ``;
+    let timeDiff = Date.parse(this.dateStart) - Date.parse(new Date());
+    const secondsInDay = 24 * 60 * 60 * 1000; // Number of seconds in a day
+    const secondsInHour = 60 * 60 * 1000; // Number of seconds in an hour
+
+    // Calculate the number of full days
+    const days = Math.floor(timeDiff / secondsInDay);
+    const secondsLeft = timeDiff - days * secondsInDay;
+    const hours = Math.floor(secondsLeft / secondsInHour);
+    if (timeDiff <= 3 * 24 * 60 * 60 * 1000 && timeDiff > 0) {
+      htmlInjection = `<p>Attention, commence dans ${days} jours et ${hours} heures</p>`;
+    } else if (Date.parse(this.dateStart) <= Date.parse(new Date())) {
+      htmlInjection = `<p>Quel dommage! Vous avez raté cet événement!</p>`;
+    }
+
     popup
       .setLngLat([this.lng, this.lat])
       .setHTML(
@@ -78,6 +91,7 @@ class ClickPopUp {
           <p id="current-lat">${this.lat}</p>
           <p><strong>Longitude</strong>:</p>
           <p id="current-lgn">${this.lng}</p>
+          ${htmlInjection}
           <button type=button id="modify-button">Modify</button>
           <button type=button id="delete-button">Delete</button>
           `

@@ -297,19 +297,18 @@ class App {
 
     for (let localEvent of this.arrEvents) {
       let newColor = '';
-      if (
-        Date.parse(localEvent.dateStart) - Date.parse(new Date()) >
-        3 * 24 * 60 * 60 * 1000
-      ) {
-        newColor = '#197530';
-      } else if (
-        Date.parse(localEvent.dateStart) - Date.parse(new Date()) <=
-          3 * 24 * 60 * 60 * 1000 &&
-        Date.parse(localEvent.dateStart) - Date.parse(new Date()) > 0
-      ) {
-        newColor = '#c94b20';
+      const colors = {
+        green: '#197530',
+        orange: '#c94b20',
+        red: '#b31810',
+      };
+      let timeDiff = Date.parse(localEvent.dateStart) - Date.parse(new Date());
+      if (timeDiff > 3 * 24 * 60 * 60 * 1000) {
+        newColor = colors.green;
+      } else if (timeDiff <= 3 * 24 * 60 * 60 * 1000 && timeDiff > 0) {
+        newColor = colors.orange;
       } else {
-        newColor = '#b31810';
+        newColor = colors.red;
       }
 
       let newMarker = new mapboxgl.Marker({
