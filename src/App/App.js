@@ -31,6 +31,8 @@ class App {
   elInputEventFinish;
   elInputLat;
   elInputLng;
+  elBtnAddNewEvent;
+  elBthModifyEvent;
   elBtnCancelEventModification;
 
   //our array of events
@@ -68,6 +70,18 @@ class App {
     //****************************************************** FORM *************************************//
     const elDivContainer = document.createElement('div');
     elDivContainer.id = 'add-event-form-container';
+
+    const elDivForm = document.createElement('div');
+    elDivForm.className = 'form-container';
+
+    const elDivButton = document.createElement('div');
+    elDivButton.className = 'button-container';
+    const elBtnDeleteAll = document.createElement('button');
+    elBtnDeleteAll.type = 'button';
+    elBtnDeleteAll.id = 'delete-all-local-events-button';
+    elBtnDeleteAll.textContent = 'Supprimer tous';
+
+    elDivButton.append(elBtnDeleteAll);
 
     this.elHeader1 = document.createElement('h1');
     this.elHeader1.textContent = 'Ajoutez votre événement';
@@ -148,9 +162,15 @@ class App {
     this.elInputLng.id = 'input-longitude';
 
     //Submit Button
-    const elBtnAddNewEvent = document.createElement('button');
-    elBtnAddNewEvent.type = 'button';
-    elBtnAddNewEvent.textContent = 'Submit';
+    this.elBtnAddNewEvent = document.createElement('button');
+    this.elBtnAddNewEvent.type = 'button';
+    this.elBtnAddNewEvent.textContent = 'Submit';
+
+    //Modify button
+    this.elBthModifyEvent = document.createElement('button');
+    this.elBthModifyEvent.type = 'button';
+    this.elBthModifyEvent.textContent = 'Modify';
+    this.elBthModifyEvent.className = 'hidden';
 
     //Cancel Button
     this.elBtnCancelEventModification = document.createElement('button');
@@ -172,13 +192,19 @@ class App {
       this.elInputLat,
       elLabelLon,
       this.elInputLng,
-      elBtnAddNewEvent,
+      this.elBtnAddNewEvent,
+      this.elBthModifyEvent,
       this.elBtnCancelEventModification
     );
-    elDivContainer.append(this.elHeader1, this.elHeader2, elFormAddEvent);
+    elDivForm.append(this.elHeader1, this.elHeader2, elFormAddEvent);
+
+    elDivContainer.append(elDivButton, elDivForm);
+
     document.body.append(this.elDivMap, elDivContainer);
 
-    elBtnAddNewEvent.addEventListener(
+    elBtnDeleteAll.addEventListener('click', this.handleDeleteAll.bind(this));
+
+    this.elBtnAddNewEvent.addEventListener(
       'click',
       this.handleAddNewEvent.bind(this)
     );
@@ -212,8 +238,6 @@ class App {
     if (this.marker) {
       this.marker.remove();
     }
-    // console.log(evt.lngLat.lng);
-    // console.log(evt.lngLat.lat);
 
     let allPopUps = document.querySelectorAll('.mapboxgl-popup');
     if (allPopUps.length > 0) {
@@ -301,9 +325,7 @@ class App {
       //Mouseenter
       newMarkerElement.addEventListener('mouseenter', () => {
         this.isHovered = true;
-        console.log(this.isPopupOpened);
         if (this.isPopupOpened) return;
-        console.log('temporaire');
         this.hoverPopUp = new HoverPopUp(
           localEvent,
           this.map
@@ -327,6 +349,22 @@ class App {
         ).mouseClickPopupAdd();
       });
     }
+  }
+
+  handleDeleteAll() {
+    this.arrEvents = [];
+    this.localStorageService.deleteStorage();
+
+    const allMarkers = document.querySelectorAll('.mapboxgl-marker');
+    for (let marker of allMarkers) {
+      marker.remove();
+    }
+    const allPopUps = document.querySelectorAll('.mapboxgl-popup');
+    for (let popUp of allPopUps) {
+      popUp.remove();
+    }
+    this.renderContent();
+    this.loadDom();
   }
 }
 

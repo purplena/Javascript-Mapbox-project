@@ -1,5 +1,5 @@
 import mapboxgl from 'mapbox-gl';
-import formatdate from './Services/FormatDate';
+import formatdate from './Helpers/FormatDate';
 
 class HoverPopUp {
   title;
@@ -50,8 +50,8 @@ class HoverPopUp {
       .setHTML(
         `
         <h1>${this.title}</h1>
-        <div>Début: ${this.dateStart}</div>
-        <div>Fin: ${this.dateFinish}</div>
+        <div>Début:  ${formatdate.formatDateForPopups(this.dateStart)}</div>
+        <div>Fin: ${formatdate.formatDateForPopups(this.dateFinish)}</div>
         `
       )
       .addTo(this.map);

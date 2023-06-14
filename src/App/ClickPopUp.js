@@ -1,5 +1,5 @@
 import mapboxgl from 'mapbox-gl';
-import formatdate from './Services/FormatDate';
+import formatdate from './Helpers/FormatDate';
 import app from './App';
 
 class ClickPopUp {
@@ -67,8 +67,12 @@ class ClickPopUp {
       .setHTML(
         `
           <h1><strong>Title</strong>: ${this.title}</h1>
-          <p><strong>Début</strong>: ${this.dateStart}</p>
-          <p><strong>Fin</strong>: ${this.dateFinish}</p>
+          <p><strong>Début</strong>: ${formatdate.formatDateForPopups(
+            this.dateStart
+          )}</p>
+          <p><strong>Fin</strong>: ${formatdate.formatDateForPopups(
+            this.dateFinish
+          )}</p>
           <p><strong>Description</strong>: ${this.description}</p>
           <p><strong>Latitude</strong>:</p>
           <p id="current-lat">${this.lat}</p>
@@ -82,19 +86,18 @@ class ClickPopUp {
     app.isPopupOpened = true;
 
     popup.on('close', () => {
-      console.log('close');
       app.isPopupOpened = false;
     });
 
     const deleteBtn = document.getElementById('delete-button');
-    deleteBtn.addEventListener('click', this.removeElementClick.bind(this));
+    deleteBtn.addEventListener('click', this.deleteSingleEvent.bind(this));
 
     const modifyBtn = document.getElementById('modify-button');
-    modifyBtn.addEventListener('click', this.modifyElementClick.bind(this));
+    modifyBtn.addEventListener('click', this.modifySingleElement.bind(this));
   }
 
-  removeElementClick(evt) {
-    console.log(this.marker);
+  deleteSingleEvent(evt) {
+    app.isPopupOpened = false;
     const allMarkers = Array.from(
       document.querySelectorAll('.mapboxgl-marker')
     );
@@ -103,13 +106,16 @@ class ClickPopUp {
     const element = evt.target.parentElement.parentElement;
     element.remove();
     app.localStorageService.saveStorage(app.arrEvents);
+
     app.renderContent();
   }
 
-  modifyElementClick(evt) {
-    console.log('click');
+  modifySingleElement(evt) {
+    app.isPopupOpened = false;
     app.elHeader1.classList.add('hidden');
     app.elHeader2.classList.remove('hidden');
+    app.elBtnAddNewEvent.classList.add('hidden');
+    app.elBthModifyEvent.classList.remove('hidden');
     app.elBtnCancelEventModification.classList.remove('hidden');
 
     const element = evt.target.parentElement.parentElement;
@@ -117,14 +123,72 @@ class ClickPopUp {
 
     app.elInputTitle.value = this.title;
     app.elInputDesc.value = this.description;
-    app.elInputEventStart.value = new Date(this.dateStart)
-      .toISOString()
-      .substr(0, 16);
-    app.elInputEventFinish.value = new Date(this.dateFinish)
-      .toISOString()
-      .substr(0, 16);
+    app.elInputEventStart.value = formatdate.formatDateToFillInputs(
+      this.dateStart
+    );
+    app.elInputEventFinish.value = formatdate.formatDateToFillInputs(
+      this.dateFinish
+    );
+
     app.elInputLat.value = this.lat;
     app.elInputLng.value = this.lng;
+
+    app.elBthModifyEvent.addEventListener(
+      'click',
+      this.saveModifiedEvent.bind(this)
+    );
+
+    app.elBtnCancelEventModification.addEventListener(
+      'click',
+      this.cancelModification.bind(this)
+    );
+  }
+
+  saveModifiedEvent() {
+    const allMarkers = Array.from(
+      document.querySelectorAll('.mapboxgl-marker')
+    );
+    const idxMarker = allMarkers.indexOf(this.marker);
+    app.arrEvents.splice(idxMarker, 1);
+
+    let modifiedTitle = app.elInputTitle.value.trim();
+    let modifiedDescription = app.elInputDesc.value.trim();
+    let modifiedDateStart = new Date(app.elInputEventStart.value);
+    let modifiedDateFinish = new Date(app.elInputEventFinish.value);
+    let modifiedLat = app.elInputLat.value;
+    let modifiedLng = app.elInputLng.value;
+
+    const modifiedEventLiteral = {
+      title: modifiedTitle,
+      description: modifiedDescription,
+      dateStart: modifiedDateStart,
+      dateFinish: modifiedDateFinish,
+      lat: modifiedLat,
+      lng: modifiedLng,
+    };
+
+    app.arrEvents.push(modifiedEventLiteral);
+    app.localStorageService.saveStorage(app.arrEvents);
+    app.renderContent();
+
+    //On vide les champs du formulaire
+    app.elInputTitle.value =
+      app.elInputDesc.value =
+      app.elInputEventStart.value =
+      app.elInputEventFinish.value =
+        '';
+
+    app.loadDom();
+  }
+
+  cancelModification() {
+    app.elInputTitle.value =
+      app.elInputDesc.value =
+      app.elInputEventStart.value =
+      app.elInputEventFinish.value =
+        '';
+
+    app.loadDom();
   }
 }
 
