@@ -10,6 +10,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'mapbox-gl/dist/mapbox-gl.css';
 //css
 import '../assets/style.css';
+import style from '../../style.js';
 import HoverPopUp from './HoverPopUp.js';
 import ClickPopUp from './ClickPopUp.js';
 import LocalStorageService from './Services/LocalStorageService.js';
@@ -105,6 +106,8 @@ class App {
     this.elInputTitle.className = 'add-event-form-input';
     this.elInputTitle.type = 'text';
     this.elInputTitle.id = 'input-title';
+    //
+    // const errorMessage
 
     //Event Description
     const elLabelDesc = document.createElement('label');
@@ -216,7 +219,7 @@ class App {
     mapboxgl.accessToken = config.apis.mapbox_gl.api_key;
     this.map = new mapboxgl.Map({
       container: this.elDivMap,
-      style: config.apis.mapbox_gl.map_styles.streets,
+      style: style,
       center: [2.79, 42.68],
       zoom: 12,
       clickTolerance: 20,
@@ -275,6 +278,28 @@ class App {
       lat: newLat,
       lng: newLng,
     };
+
+    //Easy form validation
+
+    const allInputs = [
+      newTitle,
+      newDescription,
+      newDateStart,
+      newDateFinish,
+      newLat,
+      newLng,
+    ];
+
+    // if (
+    //   newTitle == '' ||
+    //   newDescription == '' ||
+    //   newDateStart == '' ||
+    //   newDateFinish == '' ||
+    //   newLat == '' ||
+    //   newLng == ''
+    // ) {
+    //   alert('Veuillez remplir tous les champ');
+    // } else {
 
     this.arrEvents.push(newEventLiteral);
     this.localStorageService.saveStorage(this.arrEvents);
