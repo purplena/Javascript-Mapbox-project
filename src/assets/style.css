@@ -1,7 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;700&display=swap');
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+}
+h1 {
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+h2 {
+  font-weight: 700;
+  font-size: 1rem;
 }
 
 #map {
@@ -13,25 +25,36 @@ body {
 }
 
 h1 {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
+  text-align: center;
+  margin-bottom: 1rem;
 }
 
 #add-event-form-container {
   flex-direction: column;
-  width: 300px;
+  width: 325px;
   position: absolute;
   right: 2rem;
-  top: 0;
-  background: white;
+  top: 32px;
+}
+
+.form-container {
+  background: #fbfbfc;
+  padding: 1.5rem 2.5rem;
+  border-radius: 5px;
 }
 
 #add-event-form {
   flex-direction: column;
 }
 
+label {
+  font-size: 0.75rem;
+}
+
 .add-event-form-label {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .add-event-form-input {
@@ -39,17 +62,88 @@ h1 {
   width: 100%;
   margin-bottom: 0.75rem;
 }
-
-.mapboxgl-popup {
-  max-width: 400px;
-  font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+button {
+  border: none;
+  padding: 0;
+  background: none;
+  outline: none;
+  box-shadow: none;
+  user-select: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  display: inline-block;
+  padding: 0.25rem 1rem;
+  background: #fbfbfc;
+  border-radius: 5px;
+  border: 2px solid #8cc9e3;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  font-weight: 700;
 }
 
-.popup-div {
-  position: absolute;
-  top: 0;
-  left: 0;
-  background: red;
+button:hover {
+  background: #8cc9e3;
+}
+
+input,
+textarea {
+  border: 1px solid #8cc9e3;
+}
+
+input:valid,
+input:invalid {
+  box-shadow: none;
+  outline: none;
+}
+
+textarea:valid,
+textarea:invalid {
+  box-shadow: none;
+  outline: none;
+}
+
+#delete-all-local-events-button {
+  display: block;
+  padding: 0.5rem 1.25rem;
+  background: #fbfbfc;
+  border-radius: 5px;
+  border: none;
+  margin-bottom: 1.5rem;
+}
+
+#delete-all-local-events-button:hover {
+  background: #216582;
+  color: #fbfbfc;
+}
+
+.cancel-btn {
+  border-color: #9e4857;
+  margin-left: 0.25rem;
+  margin-top: 1rem;
+}
+
+.cancel-btn:hover {
+  background: #9e4857;
+  color: white;
+}
+
+#modify-button,
+#delete-button {
+  padding: 0.15rem 0.75rem;
+}
+#delete-button {
+  border-color: #9e4857;
+}
+
+#delete-button:hover {
+  background: #9e4857;
+  color: white;
+}
+
+.mapboxgl-popup {
+  width: 350px;
+  font: 12px/20px 'Roboto', Arial, Helvetica, sans-serif;
 }
 
 .anotherContainer {
@@ -57,5 +151,25 @@ h1 {
 }
 
 .hidden {
+  display: none;
+}
+
+.bi-balloon-heart {
+  padding: 0.3rem;
+  background: #fbfafa;
+  border-radius: 5px;
+  border: 2px solid #989797;
+}
+
+.alert-paragraph {
+  color: #c87941;
+  letter-spacing: 1px;
+}
+
+.click-popup-container {
+  margin: 0.75rem;
+}
+
+.mapboxgl-popup-tip {
   display: none;
 }

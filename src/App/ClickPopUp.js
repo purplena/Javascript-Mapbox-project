@@ -70,16 +70,16 @@ class ClickPopUp {
     const secondsLeft = timeDiff - days * secondsInDay;
     const hours = Math.floor(secondsLeft / secondsInHour);
     if (timeDiff <= 3 * 24 * 60 * 60 * 1000 && timeDiff > 0) {
-      htmlInjection = `<p>Attention, commence dans ${days} jours et ${hours} heures</p>`;
+      htmlInjection = `<p class="alert-paragraph">L'événement commence dans: <strong>${days} jours</strong> et <strong>${hours} heures</strong></p>`;
     } else if (Date.parse(this.dateStart) <= Date.parse(new Date())) {
-      htmlInjection = `<p>Quel dommage! Vous avez raté cet événement!</p>`;
+      htmlInjection = `<p class="missed-event-paragraph">Quel dommage! Vous avez raté cet événement!</p>`;
     }
 
     popup
       .setLngLat([this.lng, this.lat])
       .setHTML(
-        `
-          <h1><strong>Title</strong>: ${this.title}</h1>
+        `<div class="click-popup-container">
+          <h2><strong>Title</strong>: ${this.title}</h2>
           <p><strong>Début</strong>: ${formatdate.formatDateForPopups(
             this.dateStart
           )}</p>
@@ -87,13 +87,16 @@ class ClickPopUp {
             this.dateFinish
           )}</p>
           <p><strong>Description</strong>: ${this.description}</p>
-          <p><strong>Latitude</strong>:</p>
-          <p id="current-lat">${this.lat}</p>
-          <p><strong>Longitude</strong>:</p>
-          <p id="current-lgn">${this.lng}</p>
+          <p><strong>Latitude</strong>: ${
+            Math.round(parseFloat(this.lat) * 100) / 100
+          }</p>
+          <p><strong>Longitude</strong>: ${
+            Math.round(parseFloat(this.lng) * 100) / 100
+          }</p>
           ${htmlInjection}
           <button type=button id="modify-button">Modify</button>
           <button type=button id="delete-button">Delete</button>
+          </div>
           `
       )
       .addTo(this.map);
@@ -191,7 +194,8 @@ class ClickPopUp {
       app.elInputEventStart.value =
       app.elInputEventFinish.value =
         '';
-
+    app.elBthModifyEvent.classList.add('hidden');
+    app.elBtnCancelEventModification.classList.add('hidden');
     app.loadDom();
   }
 
@@ -201,7 +205,8 @@ class ClickPopUp {
       app.elInputEventStart.value =
       app.elInputEventFinish.value =
         '';
-
+    app.elBthModifyEvent.classList.add('hidden');
+    app.elBtnCancelEventModification.classList.add('hidden');
     app.loadDom();
   }
 }

@@ -2,6 +2,7 @@
 import config from '../../app.config.js';
 //library of mapbox
 import mapboxgl from 'mapbox-gl';
+import control from './Control.js';
 //bootstrap
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -14,6 +15,7 @@ import style from '../../style.js';
 import HoverPopUp from './HoverPopUp.js';
 import ClickPopUp from './ClickPopUp.js';
 import LocalStorageService from './Services/LocalStorageService.js';
+import Control from './Control.js';
 
 class App {
   //propriétés
@@ -54,12 +56,7 @@ class App {
 
     const arrLocalEventsLiteral = this.localStorageService.readStorage();
     if (arrLocalEventsLiteral.length <= 0) return;
-    // for (let localEventLiteral of arrLocalEventsLiteral) {
-    //   this.arrEvents.push(localEventLiteral);
-    // }
-
     this.arrEvents = arrLocalEventsLiteral;
-
     this.renderContent();
   }
 
@@ -179,7 +176,7 @@ class App {
     this.elBtnCancelEventModification = document.createElement('button');
     this.elBtnCancelEventModification.type = 'button';
     this.elBtnCancelEventModification.textContent = 'Cancel';
-    this.elBtnCancelEventModification.className = 'hidden';
+    this.elBtnCancelEventModification.className = 'hidden cancel-btn';
 
     //****************************************************** Append *************************************//
     elFormAddEvent.append(
@@ -220,13 +217,15 @@ class App {
     this.map = new mapboxgl.Map({
       container: this.elDivMap,
       style: style,
-      center: [2.79, 42.68],
+      center: [3, 42.68],
       zoom: 12,
-      clickTolerance: 20,
     });
 
     const nav = new mapboxgl.NavigationControl();
     this.map.addControl(nav, 'top-left');
+
+    const control = new Control();
+    this.map.addControl(control, 'top-left');
 
     //on va ecouter le click sur le map
     this.map.on('click', this.handleClickMap.bind(this));
