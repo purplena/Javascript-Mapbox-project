@@ -166,10 +166,23 @@ textarea:invalid {
   letter-spacing: 1px;
 }
 
+.missed-event-paragraph {
+  color: #9e4857;
+  letter-spacing: 1px;
+}
+
 .click-popup-container {
   margin: 0.75rem;
 }
 
 .mapboxgl-popup-tip {
   display: none;
+}
+
+.error {
+  margin-top: -0.5rem;
+  text-align: left;
+  margin-bottom: 0.75rem;
+  color: red;
+  font-size: 0.75rem;
 }

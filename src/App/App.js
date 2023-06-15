@@ -16,6 +16,7 @@ import HoverPopUp from './HoverPopUp.js';
 import ClickPopUp from './ClickPopUp.js';
 import LocalStorageService from './Services/LocalStorageService.js';
 import Control from './Control.js';
+import FormValidation from './Helpers/FormValidation.js';
 
 class App {
   //propriétés
@@ -37,6 +38,14 @@ class App {
   elBtnAddNewEvent;
   elBthModifyEvent;
   elBtnCancelEventModification;
+
+  //errors
+  elDivErrorTitle;
+  elDivErrorDesc;
+  elDivErrorStart;
+  elDivErrorEnd;
+  elDivErrorLat;
+  elDivErrorLng;
 
   //our array of events
   arrEvents = [];
@@ -103,8 +112,11 @@ class App {
     this.elInputTitle.className = 'add-event-form-input';
     this.elInputTitle.type = 'text';
     this.elInputTitle.id = 'input-title';
-    //
-    // const errorMessage
+
+    // error message -title
+    this.elDivErrorTitle = document.createElement('div');
+    this.elDivErrorTitle.className = 'error hidden';
+    this.elDivErrorTitle.id = 'error-title';
 
     //Event Description
     const elLabelDesc = document.createElement('label');
@@ -117,6 +129,11 @@ class App {
     this.elInputDesc.rows = 4;
     this.elInputDesc.id = 'input-description';
 
+    // error message -description
+    this.elDivErrorDesc = document.createElement('div');
+    this.elDivErrorDesc.className = 'error hidden';
+    this.elDivErrorDesc.id = 'error-description';
+
     //Event Start
     const elLabelEventStart = document.createElement('label');
     elLabelEventStart.className = 'add-event-form-label';
@@ -127,6 +144,11 @@ class App {
     this.elInputEventStart.className = 'add-event-form-input';
     this.elInputEventStart.type = 'datetime-local';
     this.elInputEventStart.id = 'input-datetime-start';
+
+    // error message -description
+    this.elDivErrorStart = document.createElement('div');
+    this.elDivErrorStart.className = 'error hidden';
+    this.elDivErrorStart.id = 'error-date-start';
 
     //Event Finish
     const elLabelEventFinish = document.createElement('label');
@@ -139,6 +161,11 @@ class App {
     this.elInputEventFinish.type = 'datetime-local';
     this.elInputEventFinish.id = 'input-datetime-finish';
 
+    // error message -description
+    this.elDivErrorEnd = document.createElement('div');
+    this.elDivErrorEnd.className = 'error hidden';
+    this.elDivErrorEnd.id = 'error-date-finish';
+
     //Latitude
     const elLabelLat = document.createElement('label');
     elLabelLat.className = 'add-event-form-label';
@@ -150,7 +177,12 @@ class App {
     this.elInputLat.type = 'number';
     this.elInputLat.id = 'input-latitude';
 
-    //Latitude
+    // error message -description
+    this.elDivErrorLat = document.createElement('div');
+    this.elDivErrorLat.className = 'error hidden';
+    this.elDivErrorLat.id = 'error-latitude';
+
+    //Longitude
     const elLabelLon = document.createElement('label');
     elLabelLon.className = 'add-event-form-label';
     elLabelLon.setAttribute('for', 'input-longitude');
@@ -160,6 +192,11 @@ class App {
     this.elInputLng.className = 'add-event-form-input';
     this.elInputLng.type = 'number';
     this.elInputLng.id = 'input-longitude';
+
+    // error message -description
+    this.elDivErrorLng = document.createElement('div');
+    this.elDivErrorLng.className = 'error hidden';
+    this.elDivErrorLng.id = 'error-longitude';
 
     //Submit Button
     this.elBtnAddNewEvent = document.createElement('button');
@@ -182,16 +219,22 @@ class App {
     elFormAddEvent.append(
       elLabelTitle,
       this.elInputTitle,
+      this.elDivErrorTitle,
       elLabelDesc,
       this.elInputDesc,
+      this.elDivErrorDesc,
       elLabelEventStart,
       this.elInputEventStart,
+      this.elDivErrorStart,
       elLabelEventFinish,
       this.elInputEventFinish,
+      this.elDivErrorEnd,
       elLabelLat,
       this.elInputLat,
+      this.elDivErrorLat,
       elLabelLon,
       this.elInputLng,
+      this.elDivErrorLng,
       this.elBtnAddNewEvent,
       this.elBthModifyEvent,
       this.elBtnCancelEventModification
@@ -260,58 +303,53 @@ class App {
     this.elInputLng.value = coords.lng;
   }
 
-  handleAddNewEvent() {
+  handleAddNewEvent(evt) {
+    evt.preventDefault();
     //creation de objet literal
     let newTitle = this.elInputTitle.value.trim();
     let newDescription = this.elInputDesc.value.trim();
-    let newDateStart = new Date(this.elInputEventStart.value);
-    let newDateFinish = new Date(this.elInputEventFinish.value);
+    let newDateStart = this.elInputEventStart.value.trim();
+    // let newDateStart = new Date(this.elInputEventStart.value.trim());
+    let newDateFinish = this.elInputEventFinish.value.trim();
+    // let newDateFinish = new Date(this.elInputEventFinish.value.trim());
     let newLat = this.elInputLat.value;
     let newLng = this.elInputLng.value;
 
-    const newEventLiteral = {
-      title: newTitle,
-      description: newDescription,
-      dateStart: newDateStart,
-      dateFinish: newDateFinish,
-      lat: newLat,
-      lng: newLng,
-    };
+    if (
+      newTitle == '' ||
+      newDescription == '' ||
+      newDateStart == '' ||
+      newDateFinish == '' ||
+      newLat == '' ||
+      newLng == ''
+    ) {
+      alert('Veuillez remplir tous les champ');
+    } else if (newDateFinish < newDateStart) {
+      alert('La date de fin ne peut pas être antérieure à la date de début');
+    } else if (new Date(newDateStart) <= new Date()) {
+      alert('Vous ne pouvez pas choisir la date dans le passé');
+    } else {
+      const newEventLiteral = {
+        title: newTitle,
+        description: newDescription,
+        dateStart: newDateStart,
+        dateFinish: newDateFinish,
+        lat: newLat,
+        lng: newLng,
+      };
 
-    //Easy form validation
+      this.arrEvents.push(newEventLiteral);
+      this.localStorageService.saveStorage(this.arrEvents);
+      this.renderContent();
 
-    const allInputs = [
-      newTitle,
-      newDescription,
-      newDateStart,
-      newDateFinish,
-      newLat,
-      newLng,
-    ];
-
-    // if (
-    //   newTitle == '' ||
-    //   newDescription == '' ||
-    //   newDateStart == '' ||
-    //   newDateFinish == '' ||
-    //   newLat == '' ||
-    //   newLng == ''
-    // ) {
-    //   alert('Veuillez remplir tous les champ');
-    // } else {
-
-    this.arrEvents.push(newEventLiteral);
-    this.localStorageService.saveStorage(this.arrEvents);
-    this.renderContent();
-
-    //On vide les champs du formulaire
-    this.elInputTitle.value =
-      this.elInputDesc.value =
-      this.elInputEventStart.value =
-      this.elInputEventFinish.value =
-        '';
+      // On vide les champs du formulaire
+      this.elInputTitle.value =
+        this.elInputDesc.value =
+        this.elInputEventStart.value =
+        this.elInputEventFinish.value =
+          '';
+    }
   }
-  // }
 
   renderContent() {
     const allMarkers = document.querySelectorAll('.mapboxgl-marker');

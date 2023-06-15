@@ -14,6 +14,7 @@ class HoverPopUp {
     this.lat = newEventLiteral.lat;
     // this.dateStart = formatdate.formatDate(newEventLiteral.dateStart);
     this.dateStart = newEventLiteral.dateStart;
+    this.dateFinish = newEventLiteral.dateFinish;
     this.map = map;
   }
 
@@ -49,9 +50,13 @@ class HoverPopUp {
       .setLngLat([this.lng, this.lat])
       .setHTML(
         `
-        <h1>${this.title}</h1>
-        <div>Début:  ${formatdate.formatDateForPopups(this.dateStart)}</div>
-        <div>Fin: ${formatdate.formatDateForPopups(this.dateFinish)}</div>
+        <h2><strong>Titre</strong>: ${this.title}</h2>
+        <div><strong>Début</strong>:  ${formatdate.formatDateForPopups(
+          this.dateStart
+        )}</div>
+        <div><strong>Fin</strong>: ${formatdate.formatDateForPopups(
+          this.dateFinish
+        )}</div>
         `
       )
       .addTo(this.map);
