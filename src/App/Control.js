@@ -11,7 +11,6 @@ export default class Control {
   }
 
   onRemove() {
-    //this._container.parentNode.removeChild(this._container);
     this._container.remove();
     this._map = undefined;
   }

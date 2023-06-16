@@ -2,6 +2,7 @@ import mapboxgl from 'mapbox-gl';
 import formatdate from './Helpers/FormatDate';
 import app from './App';
 import FormatDate from './Helpers/FormatDate';
+import FormValidation from './Helpers/FormValidation';
 
 class ClickPopUp {
   title;
@@ -130,41 +131,40 @@ class ClickPopUp {
     let modifiedLat = app.elInputLat.value;
     let modifiedLng = app.elInputLng.value;
 
-    if (
-      modifiedTitle == '' ||
-      modifiedDescription == '' ||
-      modifiedDateStart == '' ||
-      modifiedDateFinish == '' ||
-      modifiedLat == '' ||
-      modifiedLng == ''
-    ) {
-      alert('Veuillez remplir tous les champ');
-    } else if (modifiedDateFinish < modifiedDateStart) {
-      alert('La date de fin ne peut pas être antérieure à la date de début');
-    } else if (new Date(modifiedDateStart) <= new Date()) {
-      alert('Vous ne pouvez pas choisir la date dans le passé');
-    } else {
-      const modifiedEventLiteral = {
-        title: modifiedTitle,
-        description: modifiedDescription,
-        dateStart: modifiedDateStart,
-        dateFinish: modifiedDateFinish,
-        lat: modifiedLat,
-        lng: modifiedLng,
-      };
-      //we prevent to add a double event in LS
-      this.deleteEventFromArrayByIndex();
+    FormValidation.validateTitle(modifiedTitle);
+    FormValidation.validateDesc(modifiedDescription);
+    FormValidation.validateDateStart(modifiedDateStart, modifiedDateFinish);
+    FormValidation.validateDateFinish(modifiedDateFinish);
+    FormValidation.validateLat(modifiedLat);
+    FormValidation.validateLng(modifiedLat);
 
-      app.arrEvents.push(modifiedEventLiteral);
-      app.localStorageService.saveStorage(app.arrEvents);
-      app.renderContent();
-
-      this.cleanFormInputs();
-      app.elBthModifyEvent.classList.add('hidden');
-      app.elBtnCancelEventModification.classList.add('hidden');
-
-      app.loadDom();
+    const allDivErrors = document.querySelectorAll('.error');
+    for (let divError of allDivErrors) {
+      if (divError.textContent !== '') {
+        return;
+      }
     }
+
+    const modifiedEventLiteral = {
+      title: modifiedTitle,
+      description: modifiedDescription,
+      dateStart: modifiedDateStart,
+      dateFinish: modifiedDateFinish,
+      lat: modifiedLat,
+      lng: modifiedLng,
+    };
+    //we prevent to add a double event in LS
+    this.deleteEventFromArrayByIndex();
+
+    app.arrEvents.push(modifiedEventLiteral);
+    app.localStorageService.saveStorage(app.arrEvents);
+    app.renderContent();
+
+    this.cleanFormInputs();
+    app.elBthModifyEvent.classList.add('hidden');
+    app.elBtnCancelEventModification.classList.add('hidden');
+
+    app.loadDom();
   }
 
   cancelModification() {

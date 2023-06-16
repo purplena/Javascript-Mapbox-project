@@ -2,7 +2,7 @@ class FormatDate {
   static formatDateToFillInputs(date) {
     const modifiedDate = new Date(date);
     const year = modifiedDate.getFullYear();
-    const month = ('0' + (modifiedDate.getMonth() + 1)).slice(-2); // Adding 1 to month because it is zero-based
+    const month = ('0' + (modifiedDate.getMonth() + 1)).slice(-2);
     const day = ('0' + modifiedDate.getDate()).slice(-2);
     const hours = ('0' + modifiedDate.getHours()).slice(-2);
     const minutes = ('0' + modifiedDate.getMinutes()).slice(-2);
@@ -14,7 +14,7 @@ class FormatDate {
   static formatDateForPopups(date) {
     const modifiedDate = new Date(date);
     const year = modifiedDate.getFullYear();
-    const month = ('0' + (modifiedDate.getMonth() + 1)).slice(-2); // Adding 1 to month because it is zero-based
+    const month = ('0' + (modifiedDate.getMonth() + 1)).slice(-2);
     const day = ('0' + modifiedDate.getDate()).slice(-2);
     const hours = ('0' + modifiedDate.getHours()).slice(-2);
     const minutes = ('0' + modifiedDate.getMinutes()).slice(-2);
@@ -25,8 +25,8 @@ class FormatDate {
 
   static calcRemainingTime(dateStart) {
     let timeDiff = Date.parse(dateStart) - Date.parse(new Date());
-    const secondsInDay = 24 * 60 * 60 * 1000; // Number of seconds in a day
-    const secondsInHour = 60 * 60 * 1000; // Number of seconds in an hour
+    const secondsInDay = 24 * 60 * 60 * 1000;
+    const secondsInHour = 60 * 60 * 1000;
 
     // Calculate the number of full days
     const days = Math.floor(timeDiff / secondsInDay);

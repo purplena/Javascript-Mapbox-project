@@ -12,7 +12,6 @@ class HoverPopUp {
     this.title = newEventLiteral.title;
     this.lng = newEventLiteral.lng;
     this.lat = newEventLiteral.lat;
-    // this.dateStart = formatdate.formatDate(newEventLiteral.dateStart);
     this.dateStart = newEventLiteral.dateStart;
     this.dateFinish = newEventLiteral.dateFinish;
     this.map = map;
