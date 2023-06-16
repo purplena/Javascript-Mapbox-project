@@ -1,11 +1,11 @@
 import mapboxgl from 'mapbox-gl';
+import formatdate from './Helpers/FormatDate';
 
 class HoverPopUp {
   title;
   lng;
   lat;
   dateStart;
-  dateFinish;
   map;
 
   constructor(newEventLiteral, map) {
@@ -45,14 +45,17 @@ class HoverPopUp {
     });
 
     this.map.getCanvas().style.cursor = 'pointer';
-
     popup
       .setLngLat([this.lng, this.lat])
       .setHTML(
         `
-        <h1>${this.title}</h1>
-        <div>${this.dateStart}</div>
-        <div>${this.dateFinish}</div>
+        <h2><strong>Titre</strong>: ${this.title}</h2>
+        <div><strong>Début</strong>:  ${formatdate.formatDateForPopups(
+          this.dateStart
+        )}</div>
+        <div><strong>Fin</strong>: ${formatdate.formatDateForPopups(
+          this.dateFinish
+        )}</div>
         `
       )
       .addTo(this.map);
