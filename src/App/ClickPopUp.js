@@ -162,12 +162,6 @@ class ClickPopUp {
   }
 
   saveModifiedEvent() {
-    const allMarkers = Array.from(
-      document.querySelectorAll('.mapboxgl-marker')
-    );
-    const idxMarker = allMarkers.indexOf(this.marker);
-    app.arrEvents.splice(idxMarker, 1);
-
     let modifiedTitle = app.elInputTitle.value.trim();
     let modifiedDescription = app.elInputDesc.value.trim();
     // let modifiedDateStart = new Date(app.elInputEventStart.value);
@@ -177,44 +171,50 @@ class ClickPopUp {
     let modifiedLat = app.elInputLat.value;
     let modifiedLng = app.elInputLng.value;
 
-    // if (
-    //   modifiedTitle == '' ||
-    //   modifiedDescription == '' ||
-    //   modifiedDateStart == '' ||
-    //   modifiedDateFinish == '' ||
-    //   modifiedLat == '' ||
-    //   modifiedLng == ''
-    // ) {
-    //   alert('Veuillez remplir tous les champ');
-    // } else if (modifiedDateFinish < modifiedDateStart) {
-    //   alert('La date de fin ne peut pas être antérieure à la date de début');
-    // } else if (new Date(modifiedDateStart) <= new Date()) {
-    //   alert('Vous ne pouvez pas choisir la date dans le passé');
-    // } else {
-    const modifiedEventLiteral = {
-      title: modifiedTitle,
-      description: modifiedDescription,
-      dateStart: modifiedDateStart,
-      dateFinish: modifiedDateFinish,
-      lat: modifiedLat,
-      lng: modifiedLng,
-    };
+    if (
+      modifiedTitle == '' ||
+      modifiedDescription == '' ||
+      modifiedDateStart == '' ||
+      modifiedDateFinish == '' ||
+      modifiedLat == '' ||
+      modifiedLng == ''
+    ) {
+      alert('Veuillez remplir tous les champ');
+    } else if (modifiedDateFinish < modifiedDateStart) {
+      alert('La date de fin ne peut pas être antérieure à la date de début');
+    } else if (new Date(modifiedDateStart) <= new Date()) {
+      alert('Vous ne pouvez pas choisir la date dans le passé');
+    } else {
+      const modifiedEventLiteral = {
+        title: modifiedTitle,
+        description: modifiedDescription,
+        dateStart: modifiedDateStart,
+        dateFinish: modifiedDateFinish,
+        lat: modifiedLat,
+        lng: modifiedLng,
+      };
+      //we prevent to add a double event in LS
+      const allMarkers = Array.from(
+        document.querySelectorAll('.mapboxgl-marker')
+      );
+      const idxMarker = allMarkers.indexOf(this.marker);
+      app.arrEvents.splice(idxMarker, 1);
 
-    app.arrEvents.push(modifiedEventLiteral);
-    app.localStorageService.saveStorage(app.arrEvents);
-    // }
-    app.renderContent();
+      app.arrEvents.push(modifiedEventLiteral);
+      app.localStorageService.saveStorage(app.arrEvents);
+      app.renderContent();
 
-    //On vide les champs du formulaire
-    app.elInputTitle.value =
-      app.elInputDesc.value =
-      app.elInputEventStart.value =
-      app.elInputEventFinish.value =
-        '';
-    app.elBthModifyEvent.classList.add('hidden');
-    app.elBtnCancelEventModification.classList.add('hidden');
+      //On vide les champs du formulaire
+      app.elInputTitle.value =
+        app.elInputDesc.value =
+        app.elInputEventStart.value =
+        app.elInputEventFinish.value =
+          '';
+      app.elBthModifyEvent.classList.add('hidden');
+      app.elBtnCancelEventModification.classList.add('hidden');
 
-    app.loadDom();
+      app.loadDom();
+    }
   }
 
   cancelModification() {
