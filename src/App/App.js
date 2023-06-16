@@ -245,6 +245,12 @@ class App {
 
     document.body.append(this.elDivMap, elDivContainer);
 
+    //Hide errors
+    FormValidation.hideTitleErrors();
+    FormValidation.hideDescErrors();
+    FormValidation.hideStartDateErrors();
+    FormValidation.hideFinishDateErrors();
+
     elBtnDeleteAll.addEventListener('click', this.handleDeleteAll.bind(this));
 
     this.elBtnAddNewEvent.addEventListener(
@@ -254,8 +260,6 @@ class App {
   }
 
   initMap() {
-    //initialiseer la map
-
     mapboxgl.accessToken = config.apis.mapbox_gl.api_key;
     this.map = new mapboxgl.Map({
       container: this.elDivMap,
@@ -270,11 +274,14 @@ class App {
     const control = new Control();
     this.map.addControl(control, 'top-left');
 
-    //on va ecouter le click sur le map
     this.map.on('click', this.handleClickMap.bind(this));
   }
 
   handleClickMap(evt) {
+    FormValidation.hideLatErrorsOnFocus();
+    FormValidation.hideLatErrorsOnClick();
+    FormValidation.hideLngErrorsOnFocus();
+    FormValidation.hideLngErrorsOnClick();
     // do not do that if my mouse is currently over a marker
     if (this.isHovered) {
       return;
@@ -303,52 +310,48 @@ class App {
     this.elInputLng.value = coords.lng;
   }
 
-  handleAddNewEvent(evt) {
-    evt.preventDefault();
-    //creation de objet literal
+  handleAddNewEvent() {
+    // evt.preventDefault();
+
     let newTitle = this.elInputTitle.value.trim();
     let newDescription = this.elInputDesc.value.trim();
     let newDateStart = this.elInputEventStart.value.trim();
-    // let newDateStart = new Date(this.elInputEventStart.value.trim());
     let newDateFinish = this.elInputEventFinish.value.trim();
-    // let newDateFinish = new Date(this.elInputEventFinish.value.trim());
     let newLat = this.elInputLat.value;
     let newLng = this.elInputLng.value;
 
-    if (
-      newTitle == '' ||
-      newDescription == '' ||
-      newDateStart == '' ||
-      newDateFinish == '' ||
-      newLat == '' ||
-      newLng == ''
-    ) {
-      alert('Veuillez remplir tous les champ');
-    } else if (newDateFinish < newDateStart) {
-      alert('La date de fin ne peut pas être antérieure à la date de début');
-    } else if (new Date(newDateStart) <= new Date()) {
-      alert('Vous ne pouvez pas choisir la date dans le passé');
-    } else {
-      const newEventLiteral = {
-        title: newTitle,
-        description: newDescription,
-        dateStart: newDateStart,
-        dateFinish: newDateFinish,
-        lat: newLat,
-        lng: newLng,
-      };
+    FormValidation.validateTitle(newTitle);
+    FormValidation.validateDesc(newDescription);
+    FormValidation.validateDateStart(newDateStart, newDateFinish);
+    FormValidation.validateDateFinish(newDateFinish);
+    FormValidation.validateLat(newLat);
+    FormValidation.validateLng(newLng);
 
-      this.arrEvents.push(newEventLiteral);
-      this.localStorageService.saveStorage(this.arrEvents);
-      this.renderContent();
-
-      // On vide les champs du formulaire
-      this.elInputTitle.value =
-        this.elInputDesc.value =
-        this.elInputEventStart.value =
-        this.elInputEventFinish.value =
-          '';
+    const allDivErrors = document.querySelectorAll('.error');
+    for (let divError of allDivErrors) {
+      if (divError.textContent !== '') {
+        return;
+      }
     }
+
+    const newEventLiteral = {
+      title: newTitle,
+      description: newDescription,
+      dateStart: newDateStart,
+      dateFinish: newDateFinish,
+      lat: newLat,
+      lng: newLng,
+    };
+
+    this.arrEvents.push(newEventLiteral);
+    this.localStorageService.saveStorage(this.arrEvents);
+    this.renderContent();
+
+    this.elInputTitle.value =
+      this.elInputDesc.value =
+      this.elInputEventStart.value =
+      this.elInputEventFinish.value =
+        '';
   }
 
   renderContent() {

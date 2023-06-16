@@ -5,7 +5,7 @@ class FormValidation {
     'Veuillez remplir ce champ',
     'Le titre contient 50 caractères max',
     'La description contient 150 caractères max',
-    'La date de fin ne peut pas être antérieure à la date de début.',
+    'La date de début ne peut pas être postérieure à la date de fin.',
     'Vous ne pouvez pas choisir la date dans le passé',
   ];
 
@@ -41,17 +41,15 @@ class FormValidation {
 
   static validateDateStart(dateStart, dateFinish) {
     let arrErrors = [];
-    console.log(dateStart);
-    console.log(dateFinish);
     if (dateStart === '') {
       arrErrors.unshift('Veuillez remplir ce champ');
       app.elDivErrorStart.textContent = arrErrors[0].toString();
       app.elDivErrorStart.classList.remove('hidden');
     }
 
-    if (new Date(dateStart) > new Date(dateFinish)) {
+    if (dateStart > dateFinish) {
       arrErrors.unshift(
-        'La date de fin ne peut pas être antérieure à la date de début'
+        'La date de début ne peut pas être postérieure à la date de fin'
       );
       app.elDivErrorStart.textContent = arrErrors[0].toString();
       app.elDivErrorStart.classList.remove('hidden');
@@ -69,8 +67,26 @@ class FormValidation {
     let arrErrors = [];
     if (dateFinish === '') {
       arrErrors.unshift('Veuillez remplir ce champ');
-      app.elDivErrorStart.textContent = arrErrors[0].toString();
-      app.elDivErrorStart.classList.remove('hidden');
+      app.elDivErrorEnd.textContent = arrErrors[0].toString();
+      app.elDivErrorEnd.classList.remove('hidden');
+    }
+  }
+
+  static validateLat(lat) {
+    let arrErrors = [];
+    if (lat === '') {
+      arrErrors.unshift('Veuillez remplir ce champ');
+      app.elDivErrorLat.textContent = arrErrors[0].toString();
+      app.elDivErrorLat.classList.remove('hidden');
+    }
+  }
+
+  static validateLng(lng) {
+    let arrErrors = [];
+    if (lng === '') {
+      arrErrors.unshift('Veuillez remplir ce champ');
+      app.elDivErrorLng.textContent = arrErrors[0].toString();
+      app.elDivErrorLng.classList.remove('hidden');
     }
   }
 
@@ -104,6 +120,34 @@ class FormValidation {
       app.elDivErrorEnd.textContent = '';
       app.elInputEventFinish.value = '';
     });
+  }
+
+  static hideLatErrorsOnFocus() {
+    app.elInputLat.addEventListener('focus', () => {
+      app.elDivErrorLat.classList.add('hidden');
+      app.elDivErrorLat.textContent = '';
+      app.elInputLat.value = '';
+    });
+  }
+
+  static hideLatErrorsOnClick() {
+    app.elDivErrorLat.classList.add('hidden');
+    app.elDivErrorLat.textContent = '';
+    app.elInputLat.value = '';
+  }
+
+  static hideLngErrorsOnFocus() {
+    app.elInputLng.addEventListener('focus', () => {
+      app.elDivErrorLng.classList.add('hidden');
+      app.elDivErrorLng.textContent = '';
+      app.elInputLng.value = '';
+    });
+  }
+
+  static hideLngErrorsOnClick() {
+    app.elDivErrorLng.classList.add('hidden');
+    app.elDivErrorLng.textContent = '';
+    app.elInputLng.value = '';
   }
 }
 

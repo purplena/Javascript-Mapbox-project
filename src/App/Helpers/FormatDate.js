@@ -22,6 +22,24 @@ class FormatDate {
 
     return datetimeLocalString;
   }
+
+  static calcRemainingTime(dateStart) {
+    let timeDiff = Date.parse(dateStart) - Date.parse(new Date());
+    const secondsInDay = 24 * 60 * 60 * 1000; // Number of seconds in a day
+    const secondsInHour = 60 * 60 * 1000; // Number of seconds in an hour
+
+    // Calculate the number of full days
+    const days = Math.floor(timeDiff / secondsInDay);
+    const secondsLeft = timeDiff - days * secondsInDay;
+    const hours = Math.floor(secondsLeft / secondsInHour);
+    if (timeDiff <= 3 * 24 * 60 * 60 * 1000 && timeDiff > 0) {
+      return `<p class="alert-paragraph">L'événement commence dans: <strong>${days} jours</strong> et <strong>${hours} heures</strong></p>`;
+    } else if (Date.parse(dateStart) <= Date.parse(new Date())) {
+      return `<p class="missed-event-paragraph">Quel dommage! Vous avez raté cet événement!</p>`;
+    } else {
+      return '';
+    }
+  }
 }
 
 export default FormatDate;
