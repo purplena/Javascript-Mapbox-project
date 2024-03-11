@@ -1,7 +1,7 @@
 ## MapBox Project
 Here is my second project that I made as a part of my curriculum in l'IDEM. 
 
-Check the final result here : https://purplena.github.io/tp2-mapbox-js-object/
+Check the final result here : [https://purplena.github.io/tp2-mapbox-js-object/](https://purplena.github.io/Javascript-Mapbox-project/)
 
 ### What I learned:
   - operate API called Mapbox and apply restrictions on API keys
